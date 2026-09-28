@@ -1,0 +1,372 @@
+:root {
+  --bevo-cream: #FBEEDD;
+  --bevo-orange: #C1440E;
+  --bevo-maroon: #5B7A4D;
+  --bevo-dark: #2B1B12;
+  --bevo-tan: #E8C9A0;
+}
+
+html {
+  font-size: 14px;
+  position: relative;
+  min-height: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--bevo-cream);
+  color: #2b1b12;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.bevo-body-banner .bevo-hero {
+  background-image: url('/images/austin-banner.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  aspect-ratio: 1672 / 941;
+  flex: 0 0 auto;
+}
+
+.bevo-body-truck .bevo-hero {
+  background-image: url('/images/truck-sunset.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+@media (max-width: 700px) {
+  .bevo-body-banner .bevo-hero {
+    background-image: none;
+    aspect-ratio: auto;
+    flex: 1 0 auto;
+  }
+  .bevo-body-truck .bevo-hero {
+    background-image: none;
+  }
+}
+
+header {
+  flex-shrink: 0;
+}
+
+h1, h2, h3, h4, .navbar-brand {
+  font-family: 'Fredoka', sans-serif;
+}
+
+.btn:focus, .btn:active:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.15rem rgba(193, 68, 14, 0.25);
+}
+
+/* ----- Navbar ----- */
+.bevo-navbar {
+  background-color: var(--bevo-cream) !important;
+  border-bottom: 1px solid rgba(43, 27, 18, 0.08);
+  padding: 0.85rem 0;
+}
+
+.bevo-navbar .navbar-brand {
+  color: var(--bevo-orange) !important;
+  font-weight: 700;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bevo-navbar .nav-link {
+  color: #2b1b12 !important;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  border-bottom: 2px solid transparent;
+}
+
+.bevo-navbar .nav-link:hover, .bevo-navbar .nav-link.active {
+  color: var(--bevo-orange) !important;
+  border-bottom-color: var(--bevo-orange);
+}
+
+
+/* ----- Hero / page area ----- */
+.bevo-hero {
+  position: relative;
+  padding: 2rem 1.5rem;
+  overflow: hidden;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.bevo-footer-dark {
+  flex-shrink: 0;
+}
+
+.bevo-card {
+  background-color: #FFF9F0;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 24px rgba(43, 27, 18, 0.08);
+  max-width: 760px;
+  width: 100%;
+  min-height: 720px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Homepage welcome card is short (just a headline + 2 buttons),
+   so keep it narrower AND its natural height -- the fixed min-height
+   above is only meant to make the Walkup and Catering checkout cards
+   (which share the base .bevo-card) match each other in size. */
+.bevo-body-banner .bevo-card {
+  max-width: 480px;
+  min-height: auto;
+}
+
+@media (max-width: 700px) {
+  .bevo-card {
+    min-height: auto;
+  }
+}
+
+
+/* ----- Headlines ----- */
+.bevo-eyebrow {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 1.6rem;
+  margin-bottom: -0.4rem;
+}
+
+.bevo-headline {
+  font-weight: 700;
+  font-size: 3rem;
+  display: inline-block;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.bevo-headline-page {
+  font-weight: 700;
+  font-size: 2.1rem;
+  display: inline-block;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.text-bevo-orange {
+  color: var(--bevo-orange);
+}
+
+.text-bevo-maroon {
+  color: var(--bevo-maroon);
+}
+
+.bevo-underline {
+  display: block;
+  width: 200px;
+  max-width: 60%;
+  height: 7px;
+  margin: 0.35rem auto 0;
+  border-radius: 999px;
+  opacity: 0.4;
+}
+
+.bevo-underline-page {
+  width: 140px;
+}
+
+.bevo-underline-orange {
+  background-color: var(--bevo-maroon);
+}
+
+.bevo-underline-maroon {
+  background-color: var(--bevo-orange);
+}
+
+.bevo-subtitle {
+  color: #5a4636;
+  margin-bottom: 1.5rem;
+}
+
+/* ----- Home page order buttons ----- */
+.bevo-home-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  margin-top: 1.75rem;
+}
+
+.btn-order {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  padding: 0.9rem 1.5rem;
+  border-radius: 16px;
+  color: white !important;
+  width: 300px;
+  max-width: 100%;
+  box-shadow: 0 4px 10px rgba(43, 27, 18, 0.15);
+  transition: transform 0.15s ease;
+}
+
+.btn-order:hover {
+  transform: translateY(-2px);
+  color: white;
+}
+
+.btn-order-walkup {
+  background-color: var(--bevo-orange);
+}
+
+.btn-order-catering {
+  background-color: var(--bevo-maroon);
+}
+
+.btn-order-icon {
+  font-size: 1.6rem;
+  background: rgba(255, 255, 255, 0.25);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-order-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.btn-order-title {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.btn-order-subtitle {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  opacity: 0.9;
+  text-transform: uppercase;
+}
+
+/* ----- Forms ----- */
+.bevo-form .form-group {
+  margin-bottom: 1.35rem;
+  text-align: left;
+}
+
+.bevo-form label {
+  display: block;
+  font-weight: 700;
+  color: #3a2a20;
+  margin-bottom: 0.35rem;
+}
+
+.bevo-form .form-control {
+  border-radius: 10px;
+  border: 1px solid #e3d3bd;
+  padding: 0.6rem 0.9rem;
+}
+
+.bevo-form .form-control:focus {
+  border-color: var(--bevo-orange);
+}
+
+.bevo-form .form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-checkout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 12px;
+  border: none;
+  color: white;
+  font-weight: 700;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+}
+
+.btn-checkout:hover {
+  filter: brightness(0.92);
+  color: white;
+}
+
+.btn-checkout-walkup {
+  background-color: var(--bevo-orange);
+}
+
+.btn-checkout-catering {
+  background-color: var(--bevo-maroon);
+}
+
+.bevo-back-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+  padding: 0.5rem 1.25rem;
+  background-color: #FFF9F0;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(43, 27, 18, 0.18);
+  color: #5a4636;
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+  z-index: 2;
+}
+
+.bevo-back-link:hover {
+  color: var(--bevo-orange);
+}
+
+/* ----- Footer ----- */
+.bevo-footer-dark {
+  background-color: var(--bevo-dark);
+  color: white;
+  padding: 1rem 0;
+}
+
+.bevo-footer-dark a {
+  color: var(--bevo-tan);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* ----- Order summary (totals) tables ----- */
+.bevo-summary dt {
+  font-weight: 700;
+  color: #3a2a20;
+}
+
+.bevo-summary dd {
+  margin-bottom: 0.5rem;
+}

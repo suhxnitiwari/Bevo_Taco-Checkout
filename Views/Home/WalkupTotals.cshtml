@@ -1,0 +1,47 @@
+@model Tiwari_Suhani_HW2.Models.WalkupOrder
+
+@{
+    ViewData["Title"] = "Walkup Order Totals";
+}
+
+<div class="bevo-card">
+    <div class="text-center">
+        <h1 class="bevo-headline-page text-bevo-orange">
+            Order Summary
+            <span class="bevo-underline bevo-underline-page bevo-underline-orange"></span>
+        </h1>
+    </div>
+
+    <dl class="row bevo-summary">
+        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.CustomerName)</dt>
+        <dd class="col-sm-7">@Html.DisplayFor(model => model.CustomerName)</dd>
+
+        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.NumberOfTacos)</dt>
+        <dd class="col-sm-7">@Html.DisplayFor(model => model.NumberOfTacos)</dd>
+
+        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.NumberOfBurgers)</dt>
+        <dd class="col-sm-7">@Html.DisplayFor(model => model.NumberOfBurgers)</dd>
+
+        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.TotalItems)</dt>
+        <dd class="col-sm-7">@Html.DisplayFor(model => model.TotalItems)</dd>
+
+        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.TacoSubtotal)</dt>
+        <dd class="col-sm-7">@Model.TacoSubtotal.ToString("c")</dd>
+
+        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.BurgerSubtotal)</dt>
+        <dd class="col-sm-7">@Model.BurgerSubtotal.ToString("c")</dd>
+
+        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.Subtotal)</dt>
+        <dd class="col-sm-7">@Model.Subtotal.ToString("c")</dd>
+
+        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.SalesTax)</dt>
+        <dd class="col-sm-7">@Model.SalesTax.ToString("c")</dd>
+
+        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.Total)</dt>
+        <dd class="col-sm-7"><strong>@Model.Total.ToString("c")</strong></dd>
+    </dl>
+</div>
+
+<div class="text-center">
+    <a asp-action="Index" class="bevo-back-link">&larr; Back to Home</a>
+</div>

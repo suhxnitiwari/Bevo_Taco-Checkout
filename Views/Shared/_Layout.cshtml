@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Bevo's Tacos</title>
+    <script type="importmap"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Tiwari_Suhani_HW2.styles.css" asp-append-version="true" />
+</head>
+@{
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<body class="@(currentAction == "Index" ? "bevo-body-banner" : (currentAction == "CheckoutWalkup" || currentAction == "CheckoutCatering" ? "bevo-body-truck" : ""))">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bevo-navbar">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">🌮 Bevo's Tacos</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="bevoNavbar"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="bevoNavbar" class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link @(currentAction == "Index" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentAction == "CheckoutWalkup" || currentAction == "WalkupTotals" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="CheckoutWalkup">Walk-Up Order</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentAction == "CheckoutCatering" || currentAction == "CateringTotals" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="CheckoutCatering">Catering Order</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentAction == "Privacy" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="bevo-hero">
+        @RenderBody()
+    </main>
+
+    <footer class="bevo-footer-dark">
+        <div class="container text-center">
+            &copy; 2026 - Bevo's Tacos - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

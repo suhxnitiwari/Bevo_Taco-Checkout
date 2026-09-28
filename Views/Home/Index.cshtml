@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="bevo-card text-center">
+    <p class="bevo-eyebrow">Welcome to</p>
+    <h1 class="bevo-headline text-bevo-orange">
+        Bevo's Tacos!
+        <span class="bevo-underline bevo-underline-orange"></span>
+    </h1>
+    <p class="bevo-subtitle">Fresh tacos. Juicy burgers. Great people.</p>
+    <p class="fw-semibold">Please select an order type to get started:</p>
+
+    <div class="bevo-home-buttons">
+        <a asp-action="CheckoutWalkup" class="btn-order btn-order-walkup">
+            <span class="btn-order-icon">🌮</span>
+            <span class="btn-order-text">
+                <span class="btn-order-title">Walkup Order</span>
+                <span class="btn-order-subtitle">Quick &amp; Easy</span>
+            </span>
+        </a>
+        <a asp-action="CheckoutCatering" class="btn-order btn-order-catering">
+            <span class="btn-order-icon">🎉</span>
+            <span class="btn-order-text">
+                <span class="btn-order-title">Catering Order</span>
+                <span class="btn-order-subtitle">For Your Next Event</span>
+            </span>
+        </a>
+    </div>
+</div>
