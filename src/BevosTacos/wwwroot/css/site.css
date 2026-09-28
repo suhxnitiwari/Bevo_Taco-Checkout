@@ -374,3 +374,14 @@ h1, h2, h3, h4, .navbar-brand {
 .bevo-summary dd {
   margin-bottom: 0.5rem;
 }
+
+/* Hide the error alert box until there are form-level errors to show */
+.validation-summary-valid {
+  display: none;
+}
+
+.validation-summary-errors ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}

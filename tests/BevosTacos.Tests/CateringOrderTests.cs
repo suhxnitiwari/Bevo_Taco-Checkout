@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Tiwari_Suhani_HW2.Models;
+using BevosTacos.Models;
 
-namespace Tiwari_Suhani_HW2.Tests;
+namespace BevosTacos.Tests;
 
 public class CateringOrderTests
 {
@@ -80,7 +80,13 @@ public class CateringOrderTests
     {
         var order = new CateringOrder { CustomerCode = "AB" };
 
-        Assert.Throws<Exception>(order.CalcTotals);
+        Assert.Throws<EmptyOrderException>(order.CalcTotals);
+    }
+
+    [Fact]
+    public void CustomerType_IsCatering()
+    {
+        Assert.Equal(CustomerType.Catering, new CateringOrder().CustomerType);
     }
 
     [Theory]

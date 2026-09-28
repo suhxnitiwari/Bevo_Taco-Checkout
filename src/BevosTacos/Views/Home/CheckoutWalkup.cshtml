@@ -1,4 +1,4 @@
-@model Tiwari_Suhani_HW2.Models.WalkupOrder
+@model BevosTacos.Models.WalkupOrder
 
 @{
     ViewData["Title"] = "Walkup Checkout";
@@ -14,12 +14,7 @@
         <p class="bevo-subtitle">Fresh off the truck!</p>
     </div>
 
-    @if (ViewBag.Error != null)
-    {
-        <div class="alert alert-danger mb-3" role="alert">@ViewBag.Error</div>
-    }
-
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3" role="alert"></div>
 
     <form asp-action="WalkupTotals" class="bevo-form">
         <div class="form-group">

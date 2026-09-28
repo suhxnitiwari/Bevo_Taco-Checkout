@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Tiwari_Suhani_HW2.Models;
+using BevosTacos.Models;
 
-namespace Tiwari_Suhani_HW2.Tests;
+namespace BevosTacos.Tests;
 
 public class WalkupOrderTests
 {
@@ -37,9 +37,15 @@ public class WalkupOrderTests
     {
         var order = new WalkupOrder();
 
-        var ex = Assert.Throws<Exception>(order.CalcTotals);
+        var ex = Assert.Throws<EmptyOrderException>(order.CalcTotals);
 
-        Assert.Equal("Order must contain at least one taco or burger.", ex.InnerException?.Message);
+        Assert.Equal("Order must contain at least one taco or burger.", ex.Message);
+    }
+
+    [Fact]
+    public void CustomerType_IsWalkup()
+    {
+        Assert.Equal(CustomerType.Walkup, new WalkupOrder().CustomerType);
     }
 
     [Fact]

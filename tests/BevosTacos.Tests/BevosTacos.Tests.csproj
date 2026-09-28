@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../Tiwari_Suhani_HW2.csproj" />
+    <ProjectReference Include="../../src/BevosTacos/BevosTacos.csproj" />
   </ItemGroup>
 
 </Project>
