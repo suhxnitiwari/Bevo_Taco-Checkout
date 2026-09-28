@@ -41,9 +41,9 @@ public class HomeController : Controller
         catch (Exception ex)
         {
             //Business rule was violated (e.g. no tacos or burgers ordered) - show the message and send the customer back to the form
-            //ex.Message is the "wrapper" message thrown by CalcTotals; ex.InnerException.Message is the original
-            //message thrown by CalcSubtotals (e.g. "Order must contain at least one taco or burger.")
-            ViewBag.Error = ex.Message + " " + ex.InnerException?.Message;
+            //Show the original message thrown by CalcSubtotals (e.g. "Order must contain at least one taco or burger.")
+            //instead of the generic wrapper message thrown by CalcTotals
+            ViewBag.Error = ex.InnerException?.Message ?? ex.Message;
             return View("CheckoutCatering", cateringOrder);
         }
 
@@ -76,9 +76,9 @@ public class HomeController : Controller
         catch (Exception ex)
         {
             //Business rule was violated (e.g. no tacos or burgers ordered) - show the message and send the customer back to the form
-            //ex.Message is the "wrapper" message thrown by CalcTotals; ex.InnerException.Message is the original
-            //message thrown by CalcSubtotals (e.g. "Order must contain at least one taco or burger.")
-            ViewBag.Error = ex.Message + " " + ex.InnerException?.Message;
+            //Show the original message thrown by CalcSubtotals (e.g. "Order must contain at least one taco or burger.")
+            //instead of the generic wrapper message thrown by CalcTotals
+            ViewBag.Error = ex.InnerException?.Message ?? ex.Message;
             return View("CheckoutWalkup", walkupOrder);
         }
 

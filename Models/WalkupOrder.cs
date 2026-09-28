@@ -36,7 +36,8 @@ public class WalkupOrder : Order
             throw new Exception("There was an error with the subtotals!", ex);
         }
 
-        SalesTax = Subtotal * SALES_TAX_RATE;
+        //Round tax to the nearest cent so the stored amount matches what the customer is charged
+        SalesTax = Math.Round(Subtotal * SALES_TAX_RATE, 2, MidpointRounding.AwayFromZero);
         Total = Subtotal + SalesTax;
     }
 }

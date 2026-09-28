@@ -17,7 +17,8 @@ public class CateringOrder : Order
 
     //Delivery fee for this order - must be between $0 and $250 (inclusive)
     [Display(Name = "Delivery Fee")]
-    [Range(0, 250, ErrorMessage = "Delivery fee must be between $0 and $250.")]
+    //Uses the decimal overload so values like 250.01 aren't rounded to an int and slip through
+    [Range(typeof(decimal), "0", "250", ErrorMessage = "Delivery fee must be between $0 and $250.")]
     public decimal DeliveryFee { get; set; }
 
     //True if this customer is a preferred customer (preferred customers get free delivery)
