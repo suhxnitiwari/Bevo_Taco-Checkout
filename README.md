@@ -1,6 +1,6 @@
-# Bevo's Tacos – Food Truck Checkout (HW2)
+# Bevo's Tacos Checkout
 
-An ASP.NET Core MVC app (.NET 10) for checking out food truck orders.
+An ASP.NET Core MVC app (.NET 10) for checking out food truck orders. It works out subtotals, sales tax, and delivery fees for walk-up and catering customers. Built for HW2.
 
 ## Features
 - **Walk-up orders**: tacos ($2.75) and burgers ($4.50), plus 8.25% sales tax.
