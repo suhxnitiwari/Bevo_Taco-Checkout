@@ -7,7 +7,7 @@
 
 A checkout app for an Austin food truck, built with ASP.NET Core MVC. It prices walk-up and catering orders with different rules: sales tax for walk-up customers, and delivery fees with free-delivery rules for catering customers.
 
-Built for MIS 372T (Object-Oriented Programming and Inheritance) at UT Austin.
+Built for MIS 333K Homework 2 (Object-Oriented Programming and Inheritance) at UT Austin.
 
 ![Home page](docs/screenshots/home.png)
 
