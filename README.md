@@ -5,6 +5,8 @@
 ![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4)
 ![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5-7952B3)
 
+**Live site: https://suhxnitiwari.github.io/Bevo_Taco-Checkout/**
+
 A checkout app for an Austin food truck, built with ASP.NET Core MVC. It prices walk-up and catering orders with different rules: sales tax for walk-up customers, and delivery fees with free-delivery rules for catering customers.
 
 Built for MIS 333K Homework 2 (Object-Oriented Programming and Inheritance) at UT Austin.
@@ -22,6 +24,18 @@ Built for MIS 333K Homework 2 (Object-Oriented Programming and Inheritance) at U
 - **Validation in two places:** data annotations on the models drive both the browser checks (jQuery Unobtrusive Validation) and the server checks (`ModelState`), so the rules live in one spot.
 - **Business rules in the domain model:** an order with no items throws an `EmptyOrderException`, which the controller turns into a form error.
 - **Unit tests:** xUnit tests cover pricing, tax rounding, the $1,000 free-delivery threshold, and every validation rule. They run on each push through GitHub Actions.
+
+## Live version (GitHub Pages)
+
+GitHub Pages only serves static files, so [`web/`](web) ports the same domain model to plain JavaScript (ES modules, no framework) and builds on it:
+
+- **Full menu:** tacos, burgers, sides and drinks, with priced add-ons, category tabs and a cart that merges matching items
+- **Walk-up checkout:** 8.25% sales tax rounded half away from zero, plus an optional tip
+- **Catering checkout:** customer code, a $0–$250 delivery fee waived for preferred customers and orders of $1,000+, a progress meter toward free delivery, an event date with 2 days' notice, and a guest-count planner that suggests how many tacos to order
+- **Kitchen board:** orders move from New → Cooking → Ready → Complete
+- **Sales dashboard:** revenue, average ticket, revenue split by order type, top sellers, category sales, order history and CSV export
+- **Printable receipts**, with all money stored as integer cents
+- **38 unit tests** (`cd web && npm test`) that GitHub Actions runs before every deploy
 
 ## Design
 
