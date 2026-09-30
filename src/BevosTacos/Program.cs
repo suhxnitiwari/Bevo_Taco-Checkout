@@ -1,6 +1,7 @@
 using BevosTacos.Data;
 using BevosTacos.Models;
 using BevosTacos.Services;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,11 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
+
+//Store the cookie-signing keys in the database so they survive restarts and redeploys
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<AppDbContext>()
+    .SetApplicationName("BevosTacos");
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

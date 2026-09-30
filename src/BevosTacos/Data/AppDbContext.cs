@@ -1,11 +1,15 @@
 using BevosTacos.Models;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BevosTacos.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options), IDataProtectionKeyContext
 {
+    //Keys that sign cookies and anti-forgery tokens, kept in the database so a restart doesn't sign everyone out
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
+
     public DbSet<MenuItem> MenuItems => Set<MenuItem>();
     public DbSet<AddOn> AddOns => Set<AddOn>();
     public DbSet<Order> Orders => Set<Order>();
