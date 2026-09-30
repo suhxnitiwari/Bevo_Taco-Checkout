@@ -64,6 +64,24 @@ main { flex: 1 0 auto; outline: none; }
 .footer { background: var(--dark); color: #F5E6D3; text-align: center; padding: 1rem; font-size: 0.9rem; }
 .footer a { color: var(--orange-soft); font-weight: 700; }
 
+/* footer: a kitchen ticket */
+.ticket-foot { padding: 2rem 1rem 2.4rem; }
+.ticket { max-width: 340px; margin: 0 auto; padding: 1.2rem 1.4rem 1rem; background: var(--paper); color: var(--dark); text-align: left; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.82rem; border-radius: 6px 6px 0 0;
+    -webkit-mask: radial-gradient(circle 7px at 50% 100%, transparent 98%, #000) 0 0 / 18px 100% repeat-x;
+            mask: radial-gradient(circle 7px at 50% 100%, transparent 98%, #000) 0 0 / 18px 100% repeat-x; padding-bottom: 1.6rem; }
+.ticket-head { display: flex; justify-content: space-between; gap: 0.5rem; margin: 0 0 0.7rem; padding-bottom: 0.6rem; border-bottom: 1.5px dashed rgba(43, 27, 18, 0.35); }
+.ticket-head b { font-family: 'Fredoka', sans-serif; font-size: 1rem; color: var(--orange); }
+.ticket-head span { color: var(--muted); font-size: 0.72rem; align-self: center; }
+.ticket-items { list-style: none; margin: 0; padding: 0; }
+.ticket-items li { display: grid; grid-template-columns: 2.2rem 1fr auto; padding: 0.22rem 0; }
+.ticket-items span, .ticket-items em { color: var(--muted); font-style: normal; }
+.ticket .ticket-items a { color: var(--dark); font-weight: 700; text-decoration: none; }
+.ticket .ticket-items a:hover { color: var(--orange); text-decoration: underline; }
+.ticket-total { display: flex; justify-content: space-between; margin: 0.6rem 0 0; padding-top: 0.6rem; border-top: 1.5px dashed rgba(43, 27, 18, 0.35); font-weight: 700; }
+.ticket-total b { color: var(--orange); }
+.ticket-thanks { margin: 0.8rem 0 0.2rem; text-align: center; font-family: 'Fredoka', sans-serif; font-size: 1rem; color: var(--green); }
+.ticket-legal { margin: 0; text-align: center; font-size: 0.68rem; color: var(--muted); }
+
 /* ---------- shared pieces ---------- */
 .hero { padding: 2rem 1rem; display: flex; justify-content: center; }
 .hero-banner { background: url('../images/austin-banner.png') center / cover no-repeat; min-height: calc(100vh - 120px); align-items: center; }
