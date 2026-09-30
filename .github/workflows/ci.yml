@@ -47,6 +47,7 @@ jobs:
       - name: Apply migrations to Postgres
         run: |
           dotnet tool restore
+          dotnet restore src/BevosTacos
           dotnet ef database update --project src/BevosTacos
 
       - name: Check the model has no unmigrated changes
