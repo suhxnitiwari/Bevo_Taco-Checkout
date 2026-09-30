@@ -5,6 +5,10 @@
 ![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4)
 ![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5-7952B3)
 
+## Ownership
+
+© 2026 Suhani Tiwari. **All rights reserved.** This is my original work. The code is public so you can see how I build, not so you can reuse it: copying, reusing or republishing any part of it, including for a portfolio or a class assignment, is not permitted without my written permission. See [LICENSE](LICENSE).
+
 **Live site: https://suhxnitiwari.github.io/Bevo_Taco-Checkout/**
 
 A checkout app for an Austin food truck, built with ASP.NET Core MVC. It prices walk-up and catering orders with different rules: sales tax for walk-up customers, and delivery fees with free-delivery rules for catering customers.
