@@ -1,0 +1,13 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="bevo-card bevo-card-summary bevo-card-narrow text-center">
+    <h1 class="bevo-headline-page text-bevo-orange">Staff only</h1>
+    <p>Your account doesn't have access to that page.</p>
+    @if (User.IsInRole(Roles.Kitchen) || User.IsInRole(Roles.Manager))
+    {
+        <p class="bevo-muted">Catering orders are placed from a customer account.</p>
+    }
+    <a asp-controller="Home" asp-action="Index" class="bevo-back-link">&larr; Back to Home</a>
+</div>

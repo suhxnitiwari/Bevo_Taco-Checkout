@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using BevosTacos.Models;
+using static BevosTacos.Tests.OrderLines;
 
 namespace BevosTacos.Tests;
 
@@ -8,13 +9,11 @@ public class WalkupOrderTests
     [Fact]
     public void OneTacoOneBurger_CalculatesSubtotalTaxAndTotal()
     {
-        var order = new WalkupOrder { NumberOfTacos = 1, NumberOfBurgers = 1 };
+        var order = new WalkupOrder { Lines = Of(Tacos(1), Burgers(1)) };
 
         order.CalcTotals();
 
         Assert.Equal(2, order.TotalItems);
-        Assert.Equal(2.75m, order.TacoSubtotal);
-        Assert.Equal(4.50m, order.BurgerSubtotal);
         Assert.Equal(7.25m, order.Subtotal);
         Assert.Equal(0.60m, order.SalesTax);
         Assert.Equal(7.85m, order.Total);
@@ -23,7 +22,7 @@ public class WalkupOrderTests
     [Fact]
     public void SalesTax_IsRoundedToTheCent()
     {
-        var order = new WalkupOrder { NumberOfTacos = 3 };
+        var order = new WalkupOrder { Lines = Of(Tacos(3)) };
 
         order.CalcTotals();
 
@@ -33,13 +32,57 @@ public class WalkupOrderTests
     }
 
     [Fact]
+    public void SalesTax_RoundsHalfAwayFromZero()
+    {
+        // $2.00 * 8.25% = 0.165 -> 0.17 (banker's rounding would give 0.16)
+        var order = new WalkupOrder { Lines = Of(Drinks(1)) };
+
+        order.CalcTotals();
+
+        Assert.Equal(0.17m, order.SalesTax);
+    }
+
+    [Fact]
+    public void AddOns_ArePartOfTheUnitPrice()
+    {
+        // Burger with a double patty ($2.00) and guac ($0.75)
+        var order = new WalkupOrder { Lines = Of(Burgers(2, addOns: 2.75m)) };
+
+        order.CalcTotals();
+
+        Assert.Equal(14.50m, order.Subtotal);
+    }
+
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(15, 1.35)]
+    [InlineData(18, 1.62)]
+    [InlineData(20, 1.80)]
+    public void Tip_IsAPercentOfTheSubtotal(int percent, decimal expectedTip)
+    {
+        var order = new WalkupOrder { TipPercent = percent, Lines = Of(Burgers(2)) };
+
+        order.CalcTotals();
+
+        Assert.Equal(expectedTip, order.Tip);
+        Assert.Equal(9.00m + 0.74m + expectedTip, order.Total);
+    }
+
+    [Fact]
+    public void OnlyOfferedTips_AreValid()
+    {
+        Assert.Contains(Validate(new WalkupOrder { TipPercent = 50 }), e => e.ErrorMessage == "Choose one of the tip options.");
+        Assert.Empty(Validate(new WalkupOrder { TipPercent = 18 }));
+    }
+
+    [Fact]
     public void EmptyOrder_Throws()
     {
-        var order = new WalkupOrder();
+        var order = new WalkupOrder { Lines = Of(Tacos(0)) };
 
         var ex = Assert.Throws<EmptyOrderException>(order.CalcTotals);
 
-        Assert.Equal("Order must contain at least one taco or burger.", ex.Message);
+        Assert.Equal("Order must contain at least one item.", ex.Message);
     }
 
     [Fact]
@@ -49,21 +92,15 @@ public class WalkupOrderTests
     }
 
     [Fact]
-    public void NegativeBurgers_FailsValidation()
+    public void BlankCustomerName_IsAllowed()
     {
-        var order = new WalkupOrder { NumberOfTacos = 1, NumberOfBurgers = -1 };
-
-        var errors = Validate(order);
-
-        Assert.Contains(errors, e => e.ErrorMessage == "Number of burgers cannot be negative.");
+        Assert.Empty(Validate(new WalkupOrder { CustomerName = null }));
     }
 
     [Fact]
-    public void BlankCustomerName_IsAllowed()
+    public void LongCustomerName_FailsValidation()
     {
-        var order = new WalkupOrder { CustomerName = null, NumberOfTacos = 1 };
-
-        Assert.Empty(Validate(order));
+        Assert.NotEmpty(Validate(new WalkupOrder { CustomerName = new string('a', 41) }));
     }
 
     private static List<ValidationResult> Validate(object model)

@@ -5,3 +5,8 @@ obj/
 *.user
 *.suo
 .DS_Store
+
+# Local SQLite database
+*.db
+*.db-shm
+*.db-wal

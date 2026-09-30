@@ -1,0 +1,43 @@
+@model List<MenuItem>
+@{
+    ViewData["Title"] = "Menu & Prices";
+}
+
+<div class="bevo-panel bevo-panel-wide">
+    <div class="bevo-page-head">
+        <div>
+            <p class="bevo-eyebrow">Manager</p>
+            <h1 class="bevo-page-title">Menu &amp; prices</h1>
+            <p class="bevo-muted">Price changes apply to new orders only. Past receipts keep what the customer paid.</p>
+        </div>
+    </div>
+
+    <partial name="_ManagerNav" />
+
+    <div class="table-responsive">
+        <table class="bevo-table">
+            <thead><tr><th>Item</th><th>Category</th><th>Price</th><th>Available</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="@(item.IsAvailable ? "" : "unavailable")">
+                    <td>@item.Emoji @item.Name</td>
+                    <td>@item.Category</td>
+                    <td colspan="3">
+                        <form asp-action="UpdateItem" asp-route-id="@item.MenuItemId" method="post" class="bevo-inline-form">
+                            <label class="visually-hidden" for="price-@item.MenuItemId">Price for @item.Name</label>
+                            <span class="bevo-money-input">$<input id="price-@item.MenuItemId" name="price" type="number" step="0.01" min="0.25" max="100" value="@item.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)" /></span>
+                            <label class="bevo-switch">
+                                <input type="checkbox" name="isAvailable" value="true" checked="@item.IsAvailable" />
+                                <span>@(item.IsAvailable ? "On the menu" : "Sold out")</span>
+                            </label>
+                            <input type="hidden" name="isAvailable" value="false" />
+                            <button type="submit" class="bevo-mini solid">Save</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

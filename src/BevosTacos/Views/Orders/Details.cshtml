@@ -1,0 +1,86 @@
+@model Order
+@{
+    ViewData["Title"] = $"Order #{Model.OrderNumber}";
+    var walkup = Model as WalkupOrder;
+    var catering = Model as CateringOrder;
+    var steps = new[] { OrderStatus.New, OrderStatus.Cooking, OrderStatus.Ready, OrderStatus.Complete };
+}
+
+<div class="bevo-card bevo-card-summary bevo-receipt">
+    <div class="bevo-receipt-head">
+        <div>
+            <p class="bevo-eyebrow">Order #@Model.OrderNumber · @(walkup is not null ? "Walk-up" : "Catering")</p>
+            <h1 class="bevo-headline-page text-bevo-maroon mb-0">Order Summary</h1>
+        </div>
+        <span class="bevo-status bevo-status-@Model.Status.ToString().ToLowerInvariant()">@Model.Status</span>
+    </div>
+
+    @if (Model.Status != OrderStatus.Cancelled)
+    {
+        <ol class="bevo-progress" aria-label="Order progress">
+            @foreach (var step in steps)
+            {
+                <li class="@(step <= Model.Status ? "done" : "")" aria-current="@(step == Model.Status ? "step" : null)">@step</li>
+            }
+        </ol>
+    }
+
+    <dl class="bevo-receipt-meta">
+        @if (walkup is not null)
+        {
+            <div><dt>Name</dt><dd>@(walkup.CustomerName ?? "Walk-up guest")</dd></div>
+        }
+        @if (catering is not null)
+        {
+            <div><dt>Customer code</dt><dd>@catering.CustomerCode</dd></div>
+            <div><dt>Event</dt><dd>@catering.EventDate.ToString("ddd, MMM d, yyyy")</dd></div>
+            <div><dt>Guests</dt><dd>@catering.GuestCount</dd></div>
+            <div><dt>Deliver to</dt><dd>@catering.DeliveryAddress</dd></div>
+        }
+        <div><dt>Placed</dt><dd>@AustinTime.Format(Model.PlacedAtUtc)</dd></div>
+        <div><dt>Total items</dt><dd>@Model.TotalItems</dd></div>
+    </dl>
+
+    <table class="bevo-table">
+        <thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Each</th><th class="num">Total</th></tr></thead>
+        <tbody>
+        @foreach (var line in Model.Lines)
+        {
+            <tr>
+                <td>@line.ItemName @if (!string.IsNullOrEmpty(line.AddOnSummary)) { <small>@line.AddOnSummary</small> }</td>
+                <td class="num">@line.Quantity</td>
+                <td class="num">@line.UnitPrice.ToString("c")</td>
+                <td class="num">@line.LineTotal.ToString("c")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <dl class="bevo-totals">
+        <div><dt>Subtotal</dt><dd>@Model.Subtotal.ToString("c")</dd></div>
+        @if (walkup is not null)
+        {
+            <div><dt>Sales tax (8.25%)</dt><dd>@walkup.SalesTax.ToString("c")</dd></div>
+            @if (walkup.Tip > 0) { <div><dt>Tip (@walkup.TipPercent%)</dt><dd>@walkup.Tip.ToString("c")</dd></div> }
+        }
+        @if (catering is not null)
+        {
+            <div>
+                <dt>Delivery fee @if (catering.DeliveryWaivedReason is not null) { <small>(waived: @catering.DeliveryWaivedReason.ToLowerInvariant())</small> }</dt>
+                <dd>@if (catering.DeliveryWaivedReason is not null) { <s>@catering.RequestedDeliveryFee.ToString("c")</s> } @catering.DeliveryFee.ToString("c")</dd>
+            </div>
+        }
+        <div class="grand"><dt>Total</dt><dd>@Model.Total.ToString("c")</dd></div>
+    </dl>
+
+    <div class="bevo-receipt-actions no-print">
+        <button type="button" class="bevo-btn" onclick="window.print()">🖨️ Print receipt</button>
+        @if (Model.Status == OrderStatus.New)
+        {
+            <form asp-action="Cancel" asp-route-id="@Model.OrderId" method="post" onsubmit="return confirm('Cancel this order?')">
+                <button type="submit" class="bevo-btn ghost">Cancel order</button>
+            </form>
+        }
+        <a asp-controller="Menu" asp-action="Index" class="bevo-btn ghost">New order</a>
+    </div>
+</div>

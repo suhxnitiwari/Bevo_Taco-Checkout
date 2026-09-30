@@ -1,0 +1,65 @@
+@model KitchenViewModel
+@inject TimeProvider Clock
+@{
+    ViewData["Title"] = "Kitchen";
+    var now = Clock.GetUtcNow().UtcDateTime;
+    var columns = new[] { OrderStatus.New, OrderStatus.Cooking, OrderStatus.Ready, OrderStatus.Complete };
+}
+
+<div class="bevo-panel bevo-panel-wide">
+    <div class="bevo-page-head">
+        <div>
+            <p class="bevo-eyebrow">Behind the counter</p>
+            <h1 class="bevo-page-title">Kitchen board</h1>
+            <p class="bevo-muted">Oldest orders first. Complete orders drop off after an hour.</p>
+        </div>
+    </div>
+
+    <div class="bevo-board">
+        @foreach (var status in columns)
+        {
+            var orders = Model.Orders.Where(o => o.Status == status).ToList();
+            <section class="bevo-col" aria-label="@status orders">
+                <h2>@status <span>@orders.Count</span></h2>
+                @if (orders.Count == 0)
+                {
+                    <p class="bevo-col-empty">Nothing here.</p>
+                }
+                @foreach (var order in orders)
+                {
+                    var waiting = (int)(now - order.StatusChangedAtUtc).TotalMinutes;
+                    var late = status != OrderStatus.Complete && waiting >= 15;
+                    <article class="bevo-ticket @(order is CateringOrder ? "catering" : "walkup") @(late ? "late" : "")">
+                        <header>
+                            <b>#@order.OrderNumber</b>
+                            <span class="bevo-pill">@(order is CateringOrder ? "Catering" : "Walk-up")</span>
+                        </header>
+                        <p class="bevo-ticket-name">
+                            @(order switch { WalkupOrder w => w.CustomerName ?? "Walk-up guest", CateringOrder c => $"{c.CustomerCode} · {c.GuestCount} guests", _ => "" })
+                        </p>
+                        <ul>
+                            @foreach (var line in order.Lines)
+                            {
+                                <li>@line.Quantity × @line.ItemName @if (!string.IsNullOrEmpty(line.AddOnSummary)) { <small>(@line.AddOnSummary)</small> }</li>
+                            }
+                        </ul>
+                        <footer>
+                            <small title="Time in @status">
+                                @if (order is CateringOrder cat) { <text>📅 @cat.EventDate.ToString("MMM d")</text> } else { <text>🕒 @(waiting < 1 ? "just now" : $"{waiting} min")</text> }
+                            </small>
+                            <span class="bevo-ticket-actions">
+                                <a asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId" class="bevo-mini">Receipt</a>
+                                @if (status != OrderStatus.Complete)
+                                {
+                                    <form asp-action="Advance" asp-route-id="@order.OrderId" method="post">
+                                        <button type="submit" class="bevo-mini solid">@(status == OrderStatus.Ready ? "Complete ✓" : $"→ {status + 1}")</button>
+                                    </form>
+                                }
+                            </span>
+                        </footer>
+                    </article>
+                }
+            </section>
+        }
+    </div>
+</div>

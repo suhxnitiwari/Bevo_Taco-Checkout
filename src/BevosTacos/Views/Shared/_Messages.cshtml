@@ -1,0 +1,8 @@
+@if (TempData["Message"] is string message)
+{
+    <div class="bevo-flash bevo-flash-ok" role="status">@message</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="bevo-flash bevo-flash-error" role="alert">@error</div>
+}

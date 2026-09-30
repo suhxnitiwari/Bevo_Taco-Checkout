@@ -1,5 +1,7 @@
+@inject IConfiguration Config
 @{
     ViewData["Title"] = "Home Page";
+    var demo = Config.GetValue("Demo:Enabled", true) && User.Identity?.IsAuthenticated != true;
 }
 
 <div class="bevo-card text-center">
@@ -9,22 +11,38 @@
         <span class="bevo-underline bevo-underline-orange"></span>
     </h1>
     <p class="bevo-subtitle">Fresh tacos. Juicy burgers. Great people.</p>
-    <p class="fw-semibold">Please select an order type to get started:</p>
 
     <div class="bevo-home-buttons">
-        <a asp-action="CheckoutWalkup" class="btn-order btn-order-walkup">
+        <a asp-controller="Menu" asp-action="Index" class="btn-order btn-order-walkup">
             <span class="btn-order-icon">🌮</span>
             <span class="btn-order-text">
-                <span class="btn-order-title">Walkup Order</span>
-                <span class="btn-order-subtitle">Quick &amp; Easy</span>
+                <span class="btn-order-title">Order Now</span>
+                <span class="btn-order-subtitle">Walk-up pickup · 8.25% tax</span>
             </span>
         </a>
-        <a asp-action="CheckoutCatering" class="btn-order btn-order-catering">
+        <a asp-controller="Checkout" asp-action="Catering" class="btn-order btn-order-catering">
             <span class="btn-order-icon">🎉</span>
             <span class="btn-order-text">
-                <span class="btn-order-title">Catering Order</span>
-                <span class="btn-order-subtitle">For Your Next Event</span>
+                <span class="btn-order-title">Catering</span>
+                <span class="btn-order-subtitle">Free delivery at $1,000</span>
             </span>
         </a>
     </div>
+
+    @if (demo)
+    {
+        <div class="bevo-demo">
+            <p class="bevo-demo-title">Try it as…</p>
+            <div class="bevo-demo-buttons">
+                @foreach (var (role, label) in new[] { ("Customer", "🙋 Customer"), ("Preferred", "⭐ Preferred customer"), ("Kitchen", "👩‍🍳 Kitchen staff"), ("Manager", "📊 Manager") })
+                {
+                    <form asp-controller="Account" asp-action="Demo" method="post">
+                        <input type="hidden" name="role" value="@role" />
+                        <button type="submit" class="bevo-chip-btn">@label</button>
+                    </form>
+                }
+            </div>
+            <p class="bevo-demo-note">One-click demo accounts. No password needed.</p>
+        </div>
+    }
 </div>

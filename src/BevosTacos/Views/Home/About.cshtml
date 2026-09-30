@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "How It Works";
+}
+
+<div class="bevo-panel bevo-panel-wide bevo-about">
+    <p class="bevo-eyebrow">How it works</p>
+    <h1 class="bevo-page-title">One set of rules, two kinds of customers.</h1>
+    <p class="bevo-lead">Bevo's Tacos started as a two-page homework app. It's now a full ordering system: ASP.NET Core MVC, Entity Framework Core, and ASP.NET Identity with three roles.</p>
+
+    <div class="bevo-dash-grid">
+        <div class="bevo-dash-card">
+            <h2>The class design</h2>
+<pre class="bevo-code">Order (abstract)          one Orders table,
+│  CalcTotals()           OrderType discriminator
+│    items → subtotal
+│    → CalcTotal()
+│
+├── WalkupOrder           + 8.25% sales tax
+│                         + optional tip
+│
+└── CateringOrder         + delivery fee by zone
+                          waived if preferred
+                          or subtotal ≥ $1,000</pre>
+            <p>The base class runs the steps every order shares and leaves one step for each subclass. That's the template method pattern, stored with EF Core table-per-hierarchy inheritance.</p>
+        </div>
+        <div class="bevo-dash-card">
+            <h2>Who can do what</h2>
+            <table class="bevo-rules">
+                <tr><th>Guest</th><td>Browse, build a cart, place walk-up orders, see their own receipts</td></tr>
+                <tr><th>Customer</th><td>Everything above, plus catering orders and order history</td></tr>
+                <tr><th>Kitchen</th><td>Kitchen board: move orders from New to Complete</td></tr>
+                <tr><th>Manager</th><td>Sales dashboard, CSV export, prices, sold-out items, preferred customers</td></tr>
+            </table>
+        </div>
+        <div class="bevo-dash-card">
+            <h2>Engineering choices</h2>
+            <ul class="bevo-ticks">
+                <li>The cart stores only item IDs. Every price is looked up on the server, so a tampered form can't change a total.</li>
+                <li>Order lines copy the item name and price, so menu changes never rewrite an old receipt.</li>
+                <li>Preferred status comes from the account, which only managers can change, never from the checkout form.</li>
+                <li>Postgres in production, SQLite for local development and tests.</li>
+                <li>xUnit unit tests for pricing and integration tests that run the real app, in GitHub Actions on every push.</li>
+            </ul>
+        </div>
+    </div>
+</div>

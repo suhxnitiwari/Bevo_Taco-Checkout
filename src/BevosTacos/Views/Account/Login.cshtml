@@ -1,0 +1,55 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+    var demo = ViewData["DemoEnabled"] is true;
+}
+
+<div class="bevo-card bevo-card-summary bevo-card-narrow">
+    <div class="text-center">
+        <h1 class="bevo-headline-page text-bevo-orange">
+            Sign in
+            <span class="bevo-underline bevo-underline-page bevo-underline-orange"></span>
+        </h1>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <form asp-action="Login" method="post" class="bevo-form">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" autocomplete="username" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Password" class="control-label"></label>
+            <input asp-for="Password" class="form-control" autocomplete="current-password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="form-group text-center">
+            <button type="submit" class="btn-checkout btn-checkout-walkup">Sign in</button>
+        </div>
+    </form>
+    <p class="text-center">New here? <a asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">Create a customer account</a></p>
+
+    @if (demo)
+    {
+        <div class="bevo-demo">
+            <p class="bevo-demo-title">Or try a demo account</p>
+            <div class="bevo-demo-buttons">
+                @foreach (var (role, label) in new[] { ("Customer", "🙋 Customer"), ("Preferred", "⭐ Preferred"), ("Kitchen", "👩‍🍳 Kitchen"), ("Manager", "📊 Manager") })
+                {
+                    <form asp-action="Demo" method="post">
+                        <input type="hidden" name="role" value="@role" />
+                        <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                        <button type="submit" class="bevo-chip-btn">@label</button>
+                    </form>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

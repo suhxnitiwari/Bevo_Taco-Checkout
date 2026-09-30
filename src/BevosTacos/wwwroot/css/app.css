@@ -1,0 +1,218 @@
+/* Styles for the ordering system pages (menu, cart, kitchen, manager, accounts).
+   Builds on the colors and fonts defined in site.css. */
+
+:root {
+  --bevo-paper: #FFF9F0;
+  --bevo-orange-soft: #F3D2BF;
+  --bevo-green-soft: #DCE6D3;
+  --bevo-muted: #6F5B4D;
+  --bevo-line: rgba(43, 27, 18, 0.1);
+}
+
+.bevo-hero { justify-content: flex-start; }
+.bevo-body-banner .bevo-hero { justify-content: center; }
+.bevo-muted { color: var(--bevo-muted); }
+.bevo-small { font-size: 0.85rem; }
+.bevo-eyebrow { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; font-weight: 800; color: var(--bevo-muted); margin: 0; }
+
+/* ---------- flash messages ---------- */
+.bevo-flash { width: 100%; max-width: 1200px; padding: 0.7rem 1rem; border-radius: 12px; font-weight: 700; z-index: 3; }
+.bevo-flash-ok { background: var(--bevo-green-soft); color: #33472A; }
+.bevo-flash-error { background: #FDE8E4; color: #8A1F10; }
+
+/* ---------- nav extras ---------- */
+.bevo-badge { display: inline-block; min-width: 1.4em; padding: 0 0.4em; border-radius: 999px; background: var(--bevo-orange); color: #fff; font-size: 0.75rem; text-align: center; }
+.bevo-signout { border: 0; padding: 0.5rem 0; font-weight: 600; color: #2b1b12 !important; text-decoration: none; }
+.bevo-signout small { color: var(--bevo-muted); font-weight: 400; }
+
+/* ---------- page panels ---------- */
+.bevo-panel { position: relative; z-index: 2; width: 100%; max-width: 900px; background: var(--bevo-paper); border-radius: 20px; padding: 2rem; box-shadow: 0 8px 24px rgba(43, 27, 18, 0.08); }
+.bevo-panel-wide { max-width: 1200px; }
+.bevo-page-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.2rem; }
+.bevo-page-title { font-size: 2rem; margin: 0.2rem 0; }
+.bevo-head-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.bevo-card-checkout { min-height: auto; }
+.bevo-card-narrow { max-width: 480px; }
+@media (max-width: 700px) { .bevo-panel { padding: 1.25rem; } }
+
+/* ---------- buttons ---------- */
+.bevo-btn { display: inline-flex; align-items: center; gap: 0.4rem; border: 0; border-radius: 999px; padding: 0.55rem 1.1rem; background: var(--bevo-orange); color: #fff !important; font-weight: 800; text-decoration: none; cursor: pointer; }
+.bevo-btn:hover { background: #A5390B; }
+.bevo-btn:disabled { background: #C9B8AA; cursor: not-allowed; }
+.bevo-btn.ghost { background: #fff; color: #2b1b12 !important; box-shadow: inset 0 0 0 1.5px var(--bevo-line); }
+.bevo-btn.ghost:hover { box-shadow: inset 0 0 0 1.5px var(--bevo-orange); color: var(--bevo-orange) !important; }
+.bevo-mini { display: inline-block; font-size: 0.8rem; font-weight: 800; padding: 0.3rem 0.7rem; border-radius: 999px; border: 1.5px solid var(--bevo-line); background: #fff; color: #2b1b12; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.bevo-mini.solid { background: #2b1b12; color: #fff; border-color: #2b1b12; }
+.bevo-link { font-weight: 700; color: var(--bevo-orange); text-decoration: none; }
+.bevo-link-btn { background: none; border: 0; color: var(--bevo-muted); text-decoration: underline; cursor: pointer; }
+
+/* ---------- home demo buttons ---------- */
+.bevo-demo { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px dashed var(--bevo-line); }
+.bevo-demo-title { font-weight: 800; margin-bottom: 0.6rem; }
+.bevo-demo-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; }
+.bevo-chip-btn { border: 1.5px solid var(--bevo-line); background: #fff; border-radius: 999px; padding: 0.4rem 0.9rem; font-weight: 700; cursor: pointer; }
+.bevo-chip-btn:hover { border-color: var(--bevo-orange); color: var(--bevo-orange); }
+.bevo-demo-note { font-size: 0.8rem; color: var(--bevo-muted); margin: 0.6rem 0 0; }
+
+/* ---------- menu ---------- */
+.bevo-tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; }
+.bevo-tab { border: 1.5px solid var(--bevo-line); background: #fff; border-radius: 999px; padding: 0.4rem 1rem; font-weight: 700; color: #2b1b12; text-decoration: none; }
+.bevo-tab.on, .bevo-tab:hover { background: #2b1b12; color: #fff; border-color: #2b1b12; }
+.bevo-menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.bevo-menu-item { display: flex; flex-direction: column; gap: 0.7rem; background: #fff; border: 1px solid var(--bevo-line); border-radius: 16px; padding: 1rem; }
+.bevo-menu-item.sold-out { opacity: 0.6; }
+.bevo-menu-top { display: flex; gap: 0.8rem; }
+.bevo-emoji { font-size: 2rem; line-height: 1; }
+.bevo-menu-item h2 { font-size: 1.15rem; margin: 0 0 0.2rem; }
+.bevo-menu-item p { margin: 0 0 0.3rem; color: var(--bevo-muted); font-size: 0.9rem; }
+.bevo-tag { display: inline-block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.1rem 0.5rem; border-radius: 999px; margin-right: 0.3rem; background: var(--bevo-orange-soft); color: #7A2B08; }
+.bevo-tag.veg { background: var(--bevo-green-soft); color: #33472A; }
+.bevo-tag.spicy { background: #F8D6CF; color: #8A1F10; }
+.bevo-tag.out { background: #2b1b12; color: #fff; }
+.bevo-addons { display: flex; flex-wrap: wrap; gap: 0.35rem; border: 0; padding: 0; margin: 0; }
+.bevo-addon input { position: absolute; opacity: 0; }
+.bevo-addon span { display: inline-block; font-size: 0.8rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 999px; border: 1.5px dashed rgba(43, 27, 18, 0.25); cursor: pointer; }
+.bevo-addon input:checked + span { border-style: solid; border-color: var(--bevo-maroon); background: var(--bevo-green-soft); color: #33472A; }
+.bevo-addon input:focus-visible + span { outline: 3px solid rgba(193, 68, 14, 0.4); }
+.bevo-menu-bottom { margin-top: auto; display: flex; align-items: center; gap: 0.5rem; }
+.bevo-price { font-weight: 800; font-size: 1.1rem; margin-right: auto; }
+.bevo-qty { width: 4.2rem; padding: 0.35rem; border: 1.5px solid var(--bevo-line); border-radius: 10px; text-align: center; }
+
+/* ---------- tables ---------- */
+.bevo-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.bevo-table th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bevo-muted); padding: 0.5rem; border-bottom: 2px solid var(--bevo-line); }
+.bevo-table td { padding: 0.6rem 0.5rem; border-bottom: 1px dashed var(--bevo-line); vertical-align: middle; }
+.bevo-table td small { display: block; color: var(--bevo-muted); }
+.bevo-table .num { text-align: right; }
+.bevo-table tfoot th { font-size: 1rem; text-transform: none; letter-spacing: 0; color: #2b1b12; border-top: 2px solid #2b1b12; border-bottom: 0; }
+.bevo-table tr.unavailable td { opacity: 0.55; }
+
+/* ---------- cart ---------- */
+.bevo-empty { text-align: center; padding: 2rem; border: 1.5px dashed var(--bevo-line); border-radius: 14px; color: var(--bevo-muted); }
+.bevo-qty-form { display: inline-flex; align-items: center; gap: 0.3rem; }
+.bevo-qty-form button { width: 1.9rem; height: 1.9rem; border-radius: 50%; border: 1.5px solid var(--bevo-line); background: #fff; font-weight: 800; line-height: 1; cursor: pointer; }
+.bevo-qty-form span { min-width: 1.8rem; text-align: center; font-weight: 700; }
+.bevo-qty-form .bevo-remove { border: 0; color: var(--bevo-muted); }
+.bevo-checkout-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+@media (max-width: 700px) { .bevo-checkout-choice { grid-template-columns: 1fr; } }
+.bevo-choice { background: #fff; border: 1px solid var(--bevo-line); border-radius: 16px; padding: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.bevo-choice h2 { font-size: 1.25rem; margin: 0; }
+.bevo-choice p { margin: 0; color: var(--bevo-muted); }
+.bevo-choice .btn-checkout { margin-top: auto; text-align: center; }
+.bevo-meter { height: 10px; border-radius: 999px; background: var(--bevo-green-soft); overflow: hidden; }
+.bevo-meter span { display: block; height: 100%; background: var(--bevo-maroon); }
+
+/* ---------- checkout ---------- */
+.bevo-summary-lines { list-style: none; padding: 0; margin: 0 0 0.3rem; }
+.bevo-summary-lines li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.35rem 0; border-bottom: 1px dashed var(--bevo-line); }
+.bevo-summary-lines small { color: var(--bevo-muted); }
+.bevo-account-strip { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; background: #fff; border-radius: 12px; padding: 0.6rem 0.9rem; margin-bottom: 1rem; border: 1px solid var(--bevo-line); }
+.bevo-tips { display: flex; flex-wrap: wrap; gap: 0.4rem; border: 0; padding: 0; }
+.bevo-tips legend { font-weight: 700; font-size: 1rem; width: 100%; margin-bottom: 0.3rem; }
+.bevo-tip { flex: 1; }
+.bevo-tip input { position: absolute; opacity: 0; }
+.bevo-tip span { display: block; text-align: center; padding: 0.5rem 0; border: 1.5px solid var(--bevo-line); border-radius: 10px; background: #fff; cursor: pointer; font-weight: 700; }
+.bevo-tip input:checked + span { background: #2b1b12; color: #fff; border-color: #2b1b12; }
+.bevo-tip input:focus-visible + span { outline: 3px solid rgba(193, 68, 14, 0.4); }
+.bevo-totals { margin: 1rem 0 0.3rem; }
+.bevo-totals div { display: flex; justify-content: space-between; padding: 0.25rem 0; }
+.bevo-totals dt { color: var(--bevo-muted); font-weight: 600; }
+.bevo-totals dt small { font-weight: 400; }
+.bevo-totals dd { margin: 0; font-weight: 700; }
+.bevo-totals s { color: var(--bevo-muted); font-weight: 400; margin-right: 0.3rem; }
+.bevo-totals .grand { border-top: 2px solid #2b1b12; margin-top: 0.4rem; padding-top: 0.5rem; font-size: 1.25rem; }
+.bevo-totals .grand dt { color: #2b1b12; font-weight: 800; }
+
+/* ---------- receipt ---------- */
+.bevo-receipt { max-width: 760px; }
+.bevo-receipt-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.bevo-receipt-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; margin: 1rem 0 1.4rem; }
+.bevo-receipt-meta dt { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bevo-muted); font-weight: 800; }
+.bevo-receipt-meta dd { margin: 0; font-weight: 700; }
+.bevo-receipt-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
+.bevo-progress { display: flex; list-style: none; padding: 0; margin: 1rem 0 0; counter-reset: step; }
+.bevo-progress li { flex: 1; text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--bevo-muted); position: relative; padding-top: 1.6rem; }
+.bevo-progress li::before { content: ""; position: absolute; top: 0.35rem; left: 50%; width: 0.9rem; height: 0.9rem; margin-left: -0.45rem; border-radius: 50%; background: #E7DCD1; z-index: 1; }
+.bevo-progress li + li::after { content: ""; position: absolute; top: 0.7rem; right: 50%; width: 100%; height: 3px; background: #E7DCD1; }
+.bevo-progress li.done { color: #2b1b12; }
+.bevo-progress li.done::before, .bevo-progress li.done::after { background: var(--bevo-maroon); }
+.bevo-status { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-weight: 800; font-size: 0.8rem; background: #EFE4D8; }
+.bevo-status-new { background: var(--bevo-orange-soft); color: #7A2B08; }
+.bevo-status-cooking { background: #FCE9B2; color: #6A4A00; }
+.bevo-status-ready { background: var(--bevo-green-soft); color: #33472A; }
+.bevo-status-complete { background: #E7E1DC; color: var(--bevo-muted); }
+.bevo-status-cancelled { background: #F3D6D6; color: #7A1F1F; text-decoration: line-through; }
+
+/* ---------- kitchen board ---------- */
+.bevo-board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+@media (max-width: 1000px) { .bevo-board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .bevo-board { grid-template-columns: 1fr; } }
+.bevo-col { background: rgba(251, 238, 221, 0.6); border: 1px solid var(--bevo-line); border-radius: 18px; padding: 0.8rem; min-height: 200px; }
+.bevo-col h2 { font-size: 1.1rem; margin: 0.2rem 0.3rem 0.8rem; display: flex; justify-content: space-between; }
+.bevo-col h2 span { font-family: 'Nunito', sans-serif; color: var(--bevo-muted); }
+.bevo-col-empty { color: var(--bevo-muted); text-align: center; font-size: 0.9rem; }
+.bevo-ticket { background: #fff; border-radius: 14px; padding: 0.8rem; margin-bottom: 0.7rem; box-shadow: 0 2px 8px rgba(43, 27, 18, 0.06); border-left: 5px solid var(--bevo-orange); }
+.bevo-ticket.catering { border-left-color: var(--bevo-maroon); }
+.bevo-ticket.late { box-shadow: 0 0 0 2px #E0A21B; }
+.bevo-ticket header, .bevo-ticket footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+.bevo-pill { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--bevo-muted); }
+.bevo-ticket-name { margin: 0.2rem 0; font-weight: 700; }
+.bevo-ticket ul { margin: 0 0 0.6rem; padding-left: 1.1rem; font-size: 0.88rem; }
+.bevo-ticket small { color: var(--bevo-muted); }
+.bevo-ticket-actions { display: flex; gap: 0.3rem; margin-left: auto; }
+
+/* ---------- manager ---------- */
+.bevo-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; margin: 1rem 0; }
+@media (max-width: 800px) { .bevo-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bevo-kpi { background: #fff; border: 1px solid var(--bevo-line); border-radius: 16px; padding: 0.9rem 1rem; }
+.bevo-kpi span { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bevo-muted); font-weight: 800; }
+.bevo-kpi b { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 600; }
+.bevo-kpi small { display: block; color: var(--bevo-muted); }
+.bevo-dash-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0; }
+@media (max-width: 1000px) { .bevo-dash-grid { grid-template-columns: 1fr; } }
+.bevo-dash-card { background: #fff; border: 1px solid var(--bevo-line); border-radius: 16px; padding: 1.2rem; margin-bottom: 1rem; }
+.bevo-dash-grid .bevo-dash-card { margin-bottom: 0; }
+.bevo-dash-card h2 { font-size: 1.1rem; margin: 0 0 1rem; }
+.bevo-daily { display: flex; align-items: flex-end; gap: 4px; height: 180px; }
+.bevo-day { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; min-width: 0; }
+.bevo-day-bar { width: 100%; max-width: 38px; display: flex; flex-direction: column; border-radius: 6px 6px 0 0; overflow: hidden; min-height: 2px; }
+.bevo-day-bar i { display: block; width: 100%; }
+.bevo-day small { font-size: 0.7rem; color: var(--bevo-muted); }
+i.walkup, .dot.walkup, .bevo-split .walkup { background: var(--bevo-orange); }
+i.catering, .dot.catering, .bevo-split .catering { background: var(--bevo-maroon); }
+.bevo-legend { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--bevo-muted); }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 0.35rem 0 0.8rem; }
+.bevo-legend .dot:first-child { margin-left: 0; }
+.bevo-split { display: flex; height: 18px; border-radius: 999px; overflow: hidden; background: #EFE4D8; }
+.bevo-legend-list div { display: flex; justify-content: space-between; margin-top: 0.7rem; }
+.bevo-legend-list dt { font-weight: 700; }
+.bevo-legend-list dt .dot { margin-left: 0; }
+.bevo-legend-list dd { margin: 0; color: var(--bevo-muted); }
+.bevo-bars { list-style: none; margin: 0; padding: 0; }
+.bevo-bars li { display: grid; grid-template-columns: 8rem 1fr auto; gap: 0.6rem; align-items: center; margin-bottom: 0.55rem; font-size: 0.9rem; }
+.bevo-bars span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bevo-bars .bar { height: 10px; background: #EFE4D8; border-radius: 999px; overflow: hidden; }
+.bevo-bars .bar i { display: block; height: 100%; background: var(--bevo-orange); border-radius: 999px; }
+.bevo-bars .bar i.alt { background: var(--bevo-maroon); }
+.bevo-inline-form { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; }
+.bevo-money-input { display: inline-flex; align-items: center; gap: 0.2rem; font-weight: 700; }
+.bevo-money-input input { width: 5.5rem; padding: 0.3rem 0.5rem; border: 1.5px solid var(--bevo-line); border-radius: 8px; }
+.bevo-switch { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; }
+
+/* ---------- about ---------- */
+.bevo-lead { font-size: 1.1rem; color: var(--bevo-muted); max-width: 760px; }
+.bevo-code { background: #2b1b12; color: #F5E6D3; padding: 1rem; border-radius: 12px; font-size: 0.78rem; line-height: 1.55; overflow-x: auto; }
+.bevo-rules { width: 100%; font-size: 0.9rem; }
+.bevo-rules th { vertical-align: top; padding: 0.45rem 0.8rem 0.45rem 0; white-space: nowrap; }
+.bevo-rules td { padding: 0.45rem 0; color: var(--bevo-muted); }
+.bevo-rules tr + tr { border-top: 1px dashed var(--bevo-line); }
+.bevo-ticks { padding-left: 1.1rem; margin: 0; }
+.bevo-ticks li { margin-bottom: 0.5rem; }
+
+@media print {
+  header, footer, .no-print, .bevo-flash { display: none !important; }
+  body, .bevo-hero { background: #fff !important; }
+  .bevo-card { box-shadow: none; }
+}
+
+.btn-checkout { display: inline-block; text-decoration: none; }

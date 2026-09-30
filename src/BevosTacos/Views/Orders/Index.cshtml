@@ -1,0 +1,40 @@
+@model List<Order>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="bevo-panel">
+    <div class="bevo-page-head">
+        <div>
+            <p class="bevo-eyebrow">Account</p>
+            <h1 class="bevo-page-title">My orders</h1>
+        </div>
+        <a asp-controller="Menu" asp-action="Index" class="bevo-btn">New order</a>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <p class="bevo-empty">No orders yet. <a asp-controller="Menu" asp-action="Index">Start one</a>.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="bevo-table">
+                <thead><tr><th>#</th><th>Placed</th><th>Type</th><th class="num">Items</th><th class="num">Total</th><th>Status</th></tr></thead>
+                <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td><a asp-action="Details" asp-route-id="@order.OrderId">@order.OrderNumber</a></td>
+                        <td>@AustinTime.Format(order.PlacedAtUtc)</td>
+                        <td>@(order is WalkupOrder ? "Walk-up" : "Catering")</td>
+                        <td class="num">@order.TotalItems</td>
+                        <td class="num">@order.Total.ToString("c")</td>
+                        <td><span class="bevo-status bevo-status-@order.Status.ToString().ToLowerInvariant()">@order.Status</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

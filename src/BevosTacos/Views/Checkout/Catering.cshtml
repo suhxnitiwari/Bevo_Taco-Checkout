@@ -1,0 +1,101 @@
+@model CateringCheckoutViewModel
+@{
+    ViewData["Title"] = "Catering Checkout";
+    var subtotal = Model.Priced?.Subtotal ?? 0;
+    var waived = Model.PreferredCustomer || subtotal >= CateringOrder.FreeDeliveryThreshold;
+}
+
+<div class="bevo-card bevo-card-checkout">
+    <div class="text-center">
+        <h1 class="bevo-headline-page text-bevo-maroon">
+            Catering Order
+            <span class="bevo-underline bevo-underline-page bevo-underline-maroon"></span>
+        </h1>
+        <p class="bevo-subtitle">For your next event</p>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3" role="alert"></div>
+
+    <div class="bevo-account-strip">
+        <span>Customer code <b>@Model.CustomerCode</b></span>
+        @if (Model.PreferredCustomer)
+        {
+            <span class="bevo-tag veg">⭐ Preferred customer: free delivery</span>
+        }
+    </div>
+
+    @if (Model.Priced is not null)
+    {
+        <partial name="_CartSummary" model="Model.Priced" />
+    }
+
+    <form asp-action="Catering" method="post" class="bevo-form mt-3">
+        <div class="row g-3">
+            <div class="col-sm-6 form-group">
+                <label asp-for="EventDate" class="control-label"></label>
+                <input asp-for="EventDate" type="date" class="form-control" min="@Model.MinDate.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="EventDate" class="text-danger"></span>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label asp-for="GuestCount" class="control-label"></label>
+                <input asp-for="GuestCount" class="form-control" min="1" placeholder="How many?" id="guest-count" />
+                <span asp-validation-for="GuestCount" class="text-danger"></span>
+                <small class="bevo-muted" id="taco-hint"></small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="DeliveryAddress" class="control-label"></label>
+            <input asp-for="DeliveryAddress" class="form-control" placeholder="Street, city, ZIP" />
+            <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Zone" class="control-label"></label>
+            <select asp-for="Zone" class="form-select" id="zone">
+                @foreach (var zone in Enum.GetValues<DeliveryZone>())
+                {
+                    <option value="@zone" data-fee="@DeliveryZones.Fee(zone).ToString(System.Globalization.CultureInfo.InvariantCulture)" selected="@(zone == Model.Zone)">
+                        @(zone switch { DeliveryZone.Campus => "UT campus", DeliveryZone.Central => "Central Austin", DeliveryZone.Greater => "Greater Austin", _ => "Outside Austin" }) · @DeliveryZones.Fee(zone).ToString("c")
+                    </option>
+                }
+            </select>
+        </div>
+
+        <dl class="bevo-totals" data-subtotal="@subtotal.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-waived="@(waived ? "1" : "0")">
+            <div><dt>Subtotal</dt><dd>@subtotal.ToString("c")</dd></div>
+            <div>
+                <dt>Delivery @if (waived) { <small>(@(Model.PreferredCustomer ? "preferred customer" : "order of $1,000+"))</small> }</dt>
+                <dd id="delivery-fee">@(waived ? "Free" : DeliveryZones.Fee(Model.Zone).ToString("c"))</dd>
+            </div>
+            <div class="grand"><dt>Total</dt><dd id="grand-total">@((subtotal + (waived ? 0 : DeliveryZones.Fee(Model.Zone))).ToString("c"))</dd></div>
+        </dl>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn-checkout btn-checkout-catering">Place catering order &rarr;</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const totals = document.querySelector('.bevo-totals');
+            const subtotal = Number(totals.dataset.subtotal), waived = totals.dataset.waived === '1';
+            const money = n => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            const zone = document.getElementById('zone');
+            zone.addEventListener('change', () => {
+                const fee = waived ? 0 : Number(zone.selectedOptions[0].dataset.fee);
+                document.getElementById('delivery-fee').textContent = waived ? 'Free' : money(fee);
+                document.getElementById('grand-total').textContent = money(subtotal + fee);
+            });
+            // 3 tacos per guest, rounded up to a dozen (same rule as CateringOrder.SuggestedTacos)
+            const guests = document.getElementById('guest-count'), hint = document.getElementById('taco-hint');
+            const update = () => {
+                const n = Number(guests.value);
+                hint.textContent = n > 0 ? `Plan on about ${Math.ceil(n * 3 / 12) * 12} tacos.` : '';
+            };
+            guests.addEventListener('input', update);
+            update();
+        })();
+    </script>
+}

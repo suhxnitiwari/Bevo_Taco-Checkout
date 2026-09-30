@@ -1,21 +1,29 @@
 using System.ComponentModel.DataAnnotations;
 using BevosTacos.Models;
+using static BevosTacos.Tests.OrderLines;
 
 namespace BevosTacos.Tests;
 
 public class CateringOrderTests
 {
+    private static readonly DateOnly Today = new(2026, 9, 30);
+
+    //A catering order that passes every rule, so each test can break just one
+    private static CateringOrder ValidOrder(params OrderLine[] lines) => new()
+    {
+        CustomerCode = "MISA",
+        DeliveryFee = 100m,
+        GuestCount = 40,
+        DeliveryAddress = "2110 Speedway",
+        EventDate = Today.AddDays(5),
+        Today = Today,
+        Lines = lines.Length > 0 ? lines.ToList() : Of(Tacos(1))
+    };
+
     [Fact]
     public void RegularCustomer_PaysDeliveryFee()
     {
-        var order = new CateringOrder
-        {
-            CustomerCode = "MISA",
-            NumberOfTacos = 30,
-            NumberOfBurgers = 30,
-            DeliveryFee = 100m,
-            PreferredCustomer = false
-        };
+        var order = ValidOrder(Tacos(30), Burgers(30));
 
         order.CalcTotals();
 
@@ -23,43 +31,34 @@ public class CateringOrderTests
         Assert.Equal(217.50m, order.Subtotal);
         Assert.Equal(100m, order.DeliveryFee);
         Assert.Equal(317.50m, order.Total);
+        Assert.Null(order.DeliveryWaivedReason);
     }
 
     [Fact]
     public void PreferredCustomer_GetsFreeDelivery()
     {
-        var order = new CateringOrder
-        {
-            CustomerCode = "MISA",
-            NumberOfTacos = 30,
-            NumberOfBurgers = 30,
-            DeliveryFee = 100m,
-            PreferredCustomer = true
-        };
+        var order = ValidOrder(Tacos(30), Burgers(30));
+        order.PreferredCustomer = true;
 
         order.CalcTotals();
 
         Assert.Equal(0m, order.DeliveryFee);
+        Assert.Equal(100m, order.RequestedDeliveryFee);
         Assert.Equal(217.50m, order.Total);
+        Assert.Equal("Preferred customer", order.DeliveryWaivedReason);
     }
 
     [Fact]
     public void LargeOrder_GetsFreeDelivery()
     {
-        var order = new CateringOrder
-        {
-            CustomerCode = "MMMM",
-            NumberOfTacos = 500,
-            NumberOfBurgers = 500,
-            DeliveryFee = 100m,
-            PreferredCustomer = false
-        };
+        var order = ValidOrder(Tacos(500), Burgers(500));
 
         order.CalcTotals();
 
         Assert.Equal(3625m, order.Subtotal);
         Assert.Equal(0m, order.DeliveryFee);
         Assert.Equal(3625m, order.Total);
+        Assert.Equal("Order of $1,000 or more", order.DeliveryWaivedReason);
     }
 
     [Theory]
@@ -67,7 +66,7 @@ public class CateringOrderTests
     [InlineData(200, 100, 1000.00, 0)]   // exactly at the threshold: free
     public void FreeDeliveryThreshold_IsInclusive(int tacos, int burgers, decimal expectedSubtotal, decimal expectedFee)
     {
-        var order = new CateringOrder { CustomerCode = "AB", NumberOfTacos = tacos, NumberOfBurgers = burgers, DeliveryFee = 100m };
+        var order = ValidOrder(Tacos(tacos), Burgers(burgers));
 
         order.CalcTotals();
 
@@ -76,9 +75,24 @@ public class CateringOrderTests
     }
 
     [Fact]
+    public void RecalculatingAfterAWaiver_StillKnowsTheRequestedFee()
+    {
+        var order = ValidOrder(Tacos(10));
+        order.PreferredCustomer = true;
+        order.CalcTotals();
+
+        order.PreferredCustomer = false;
+        order.DeliveryFee = order.RequestedDeliveryFee;
+        order.CalcTotals();
+
+        Assert.Equal(100m, order.DeliveryFee);
+    }
+
+    [Fact]
     public void EmptyOrder_Throws()
     {
-        var order = new CateringOrder { CustomerCode = "AB" };
+        var order = ValidOrder();
+        order.Lines.Clear();
 
         Assert.Throws<EmptyOrderException>(order.CalcTotals);
     }
@@ -99,7 +113,8 @@ public class CateringOrderTests
     [InlineData("", false)]       // required
     public void CustomerCode_MustBeTwoToFourLetters(string code, bool isValid)
     {
-        var order = new CateringOrder { CustomerCode = code, NumberOfTacos = 1 };
+        var order = ValidOrder();
+        order.CustomerCode = code;
 
         Assert.Equal(isValid, IsValid(order));
     }
@@ -111,9 +126,54 @@ public class CateringOrderTests
     [InlineData(250.01, false)]
     public void DeliveryFee_MustBeBetweenZeroAnd250(decimal fee, bool isValid)
     {
-        var order = new CateringOrder { CustomerCode = "AB", NumberOfTacos = 1, DeliveryFee = fee };
+        var order = ValidOrder();
+        order.DeliveryFee = fee;
 
         Assert.Equal(isValid, IsValid(order));
+    }
+
+    [Theory]
+    [InlineData(0, false)]
+    [InlineData(1, false)]
+    [InlineData(2, true)]   // exactly two days' notice is enough
+    [InlineData(30, true)]
+    public void EventDate_NeedsTwoDaysNotice(int daysAhead, bool isValid)
+    {
+        var order = ValidOrder();
+        order.EventDate = Today.AddDays(daysAhead);
+
+        Assert.Equal(isValid, IsValid(order));
+    }
+
+    [Theory]
+    [InlineData(0, false)]
+    [InlineData(1, true)]
+    [InlineData(5001, false)]
+    public void GuestCount_MustBeReasonable(int guests, bool isValid)
+    {
+        var order = ValidOrder();
+        order.GuestCount = guests;
+
+        Assert.Equal(isValid, IsValid(order));
+    }
+
+    [Fact]
+    public void DeliveryAddress_IsRequired()
+    {
+        var order = ValidOrder();
+        order.DeliveryAddress = "";
+
+        Assert.False(IsValid(order));
+    }
+
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(4, 12)]
+    [InlineData(10, 36)]  // 30 tacos rounds up to 3 dozen
+    [InlineData(40, 120)]
+    public void SuggestedTacos_IsThreePerGuestInWholeDozens(int guests, int expected)
+    {
+        Assert.Equal(expected, CateringOrder.SuggestedTacos(guests));
     }
 
     private static bool IsValid(object model) =>

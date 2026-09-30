@@ -23,3 +23,31 @@ jobs:
 
       - name: Test
         run: dotnet test BevosTacos.sln --no-build --configuration Release --verbosity normal
+
+  postgres-migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bevostacos
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      BEVOS_POSTGRES: Host=localhost;Database=bevostacos;Username=postgres;Password=postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Apply migrations to Postgres
+        run: |
+          dotnet tool restore
+          dotnet ef database update --project src/BevosTacos
+
+      - name: Check the model has no unmigrated changes
+        run: dotnet ef migrations has-pending-model-changes --project src/BevosTacos

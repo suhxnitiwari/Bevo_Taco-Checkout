@@ -1,84 +1,91 @@
-# Bevo's Tacos Checkout
+# Bevo's Tacos
 
 [![CI](https://github.com/suhxnitiwari/Bevo_Taco-Checkout/actions/workflows/ci.yml/badge.svg)](https://github.com/suhxnitiwari/Bevo_Taco-Checkout/actions/workflows/ci.yml)
 ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4)
 ![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4)
-![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5-7952B3)
+![EF Core](https://img.shields.io/badge/EF%20Core-PostgreSQL-336791)
 
 ## Ownership
 
 © 2026 Suhani Tiwari. **All rights reserved.** This is my original work. The code is public so you can see how I build, not so you can reuse it: copying, reusing or republishing any part of it, including for a portfolio or a class assignment, is not permitted without my written permission. See [LICENSE](LICENSE).
 
-**Live site: https://suhxnitiwari.github.io/Bevo_Taco-Checkout/**
+An ordering system for an Austin food truck, built with ASP.NET Core MVC, Entity Framework Core and ASP.NET Identity. Customers order from a full menu, the kitchen works orders on a live board, and managers run the business from a sales dashboard.
 
-A checkout app for an Austin food truck, built with ASP.NET Core MVC. It prices walk-up and catering orders with different rules: sales tax for walk-up customers, and delivery fees with free-delivery rules for catering customers.
+It started as MIS 333K Homework 2 at UT Austin (object-oriented programming and inheritance), a two-page checkout that priced tacos and burgers. The pricing rules from that assignment are still the core of the system.
 
-Built for MIS 333K Homework 2 (Object-Oriented Programming and Inheritance) at UT Austin.
-
-![Home page](docs/screenshots/home.png)
-
-| Catering order summary | Validation error |
-| --- | --- |
-| ![Catering order summary](docs/screenshots/catering-summary.png) | ![Validation error](docs/screenshots/walkup-error.png) |
+**Static demo (no server): https://suhxnitiwari.github.io/Bevo_Taco-Checkout/**
 
 ## Features
 
-- **Walk-up orders:** tacos ($2.75) and burgers ($4.50), plus 8.25% sales tax rounded to the cent.
-- **Catering orders:** a 2–4 letter customer code and a delivery fee from $0 to $250. Delivery is free for preferred customers and for orders of $1,000 or more.
-- **Validation in two places:** data annotations on the models drive both the browser checks (jQuery Unobtrusive Validation) and the server checks (`ModelState`), so the rules live in one spot.
-- **Business rules in the domain model:** an order with no items throws an `EmptyOrderException`, which the controller turns into a form error.
-- **Unit tests:** xUnit tests cover pricing, tax rounding, the $1,000 free-delivery threshold, and every validation rule. They run on each push through GitHub Actions.
-
-## Live version (GitHub Pages)
-
-GitHub Pages only serves static files, so [`web/`](web) ports the same domain model to plain JavaScript (ES modules, no framework) and builds on it:
-
-- **Full menu:** tacos, burgers, sides and drinks, with priced add-ons, category tabs and a cart that merges matching items
-- **Walk-up checkout:** 8.25% sales tax rounded half away from zero, plus an optional tip
-- **Catering checkout:** customer code, a $0–$250 delivery fee waived for preferred customers and orders of $1,000+, a progress meter toward free delivery, an event date with 2 days' notice, and a guest-count planner that suggests how many tacos to order
-- **Kitchen board:** orders move from New → Cooking → Ready → Complete
-- **Sales dashboard:** revenue, average ticket, revenue split by order type, top sellers, category sales, order history and CSV export
-- **Printable receipts**, with all money stored as integer cents
-- **38 unit tests** (`cd web && npm test`) that GitHub Actions runs before every deploy
+- **Menu and cart:** 13 items in four categories, with add-ons priced per item (guac, queso, double patty). Managers can change prices and mark items sold out.
+- **Walk-up checkout:** no account needed. 8.25% sales tax, rounded half away from zero to the cent, plus an optional tip.
+- **Catering checkout:** for signed-in customers. Delivery fee by zone ($50–$250), waived for preferred customers and for orders of $1,000 or more, with 2 days' notice required.
+- **Three roles:** customers see their own orders, kitchen staff move orders from New → Cooking → Ready → Complete, and managers see everything.
+- **Sales dashboard:** revenue by day, walk-up vs. catering, top sellers, sales by category, tax and tips collected, delivery fees waived, and CSV export.
+- **Receipts:** printable, with a progress tracker. Customers can cancel until the kitchen starts cooking.
+- **Demo sign-in:** one-click accounts for each role, so visitors can try the kitchen and manager views.
 
 ## Design
 
 ```
-Order (abstract)                    TacoPrice, BurgerPrice, item counts, subtotals, Total
-│  CalcTotals()                     computes subtotals (throws EmptyOrderException if
-│                                   the order is empty), then calls CalcTotal()
+Order (abstract)                    one Orders table (table-per-hierarchy), OrderType discriminator
+│  CalcTotals()                     sums the order lines (EmptyOrderException if there are none),
+│                                   then calls CalcTotal()
 │  abstract CalcTotal()             each order type adds its own charges
+│  Advance() / Cancel()             the kitchen status rules
 │
-├── WalkupOrder                     CustomerName, SalesTax
-│     CalcTotal() → subtotal + 8.25% tax
+├── WalkupOrder                     CustomerName, TipPercent, SalesTax, Tip
+│     CalcTotal() → subtotal + 8.25% tax + tip
 │
-└── CateringOrder                   CustomerCode, DeliveryFee, PreferredCustomer
+└── CateringOrder                   CustomerCode, DeliveryFee, PreferredCustomer, EventDate, GuestCount
       CalcTotal() → subtotal + delivery fee (waived when preferred or ≥ $1,000)
+      Validate()  → event date needs 2 days' notice
 ```
 
-`CalcTotals()` in the base class runs the steps every order shares and leaves one step for each subclass to fill in (the template method pattern). Calculated amounts have private setters, so only the pricing logic can change them. The models hold all pricing and validation logic and never reference views.
+`CalcTotals()` runs the steps every order shares and leaves one step for each subclass (the template method pattern). Calculated amounts have private setters, so only the pricing logic can change them.
 
-The controller stays thin. Both checkout actions go through one `Checkout(Order, formView)` helper that checks `ModelState`, calls `CalcTotals()`, and picks the view. The form posts are protected against cross-site request forgery with anti-forgery tokens.
+Security and data rules:
+
+- **Prices come from the database, not the browser.** The cart stores only item IDs, add-on IDs and quantities, and every total is recalculated on the server. Add-ons that don't belong to an item are rejected.
+- **Receipts don't change.** Each order line copies the item name, add-ons and price when the order is placed, so later menu changes never rewrite an old receipt.
+- **Preferred status comes from the account.** Only a manager can grant it, and the catering form can't set it.
+- **Access is checked on the server.** Role-based `[Authorize]` attributes protect the kitchen and manager pages. Customers can only open their own orders, and guests only the ones they placed that session.
+- **Every form post is protected** by an anti-forgery token (a global filter).
 
 ## Project layout
 
 ```
 src/BevosTacos/
-  Controllers/HomeController.cs   checkout forms and totals actions
-  Models/                         Order, WalkupOrder, CateringOrder, EmptyOrderException
-  Views/Home/                     home, checkout, and summary pages
-  wwwroot/                        styles, images, client libraries
-tests/BevosTacos.Tests/           xUnit tests for the models
+  Controllers/        Menu, Cart, Checkout, Orders, Kitchen, Manager, Account
+  Models/             Order hierarchy, MenuItem, AddOn, OrderLine, AppUser, view models
+  Data/               AppDbContext, seed data, Postgres migrations
+  Services/           CartService (session cart), OrderService (pricing and placing orders)
+  Views/              Razor views
+tests/BevosTacos.Tests/
+  *Tests.cs           unit tests for pricing, validation and order status
+  Integration/        tests that run the real app over HTTP against a throwaway database
+web/                  the static JavaScript demo deployed to GitHub Pages
 ```
 
 ## Running locally
 
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download). Locally the app uses a SQLite file, creates it on first run, and fills it with the menu, demo accounts and two weeks of sample orders.
 
 ```bash
-dotnet run --project src/BevosTacos   # start the app
-dotnet test                          # run the unit tests
+dotnet run --project src/BevosTacos
 ```
+
+```bash
+dotnet test
+```
+
+In production, set `DATABASE_URL` (or `ConnectionStrings__Postgres`) and the app applies the EF Core migrations to Postgres on startup. The `Dockerfile` builds the image for Render.
+
+## Tests
+
+- **49 unit tests** cover tax rounding, tips, add-on pricing, the free-delivery threshold, every validation rule, and the order status rules.
+- **28 integration tests** start the app with `WebApplicationFactory` and check full flows: placing orders, server-side pricing, rejected add-ons, sold-out items, receipts staying unchanged after price edits, role access, customers seeing only their own orders, and anti-forgery protection.
+- **CI** runs every test on each push, applies the migrations to a real Postgres 17 container, and fails if the model has changes that aren't in a migration.
 
 ## Author
 

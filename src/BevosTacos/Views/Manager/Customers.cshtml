@@ -1,0 +1,43 @@
+@model List<CustomerRow>
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<div class="bevo-panel bevo-panel-wide">
+    <div class="bevo-page-head">
+        <div>
+            <p class="bevo-eyebrow">Manager</p>
+            <h1 class="bevo-page-title">Customers</h1>
+            <p class="bevo-muted">Preferred customers always get free catering delivery. Only managers can grant it.</p>
+        </div>
+    </div>
+
+    <partial name="_ManagerNav" />
+
+    <div class="table-responsive">
+        <table class="bevo-table">
+            <thead><tr><th>Name</th><th>Code</th><th>Email</th><th class="num">Orders</th><th class="num">Spent</th><th>Preferred</th></tr></thead>
+            <tbody>
+            @foreach (var row in Model)
+            {
+                <tr>
+                    <td>@row.User.FirstName</td>
+                    <td><b>@row.User.CustomerCode</b></td>
+                    <td>@row.User.Email</td>
+                    <td class="num">@row.Orders</td>
+                    <td class="num">@row.Spent.ToString("c")</td>
+                    <td>
+                        <form asp-action="SetPreferred" method="post">
+                            <input type="hidden" name="id" value="@row.User.Id" />
+                            <input type="hidden" name="preferred" value="@((!row.User.PreferredCustomer).ToString().ToLowerInvariant())" />
+                            <button type="submit" class="bevo-mini @(row.User.PreferredCustomer ? "solid" : "")">
+                                @(row.User.PreferredCustomer ? "⭐ Preferred" : "Make preferred")
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

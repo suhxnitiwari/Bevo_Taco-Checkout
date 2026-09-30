@@ -1,0 +1,111 @@
+@model DashboardViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Manager Dashboard";
+    var maxDay = Math.Max(1m, Model.Daily.Max(d => d.Total));
+    var maxItem = Math.Max(1, Model.TopItems.Select(t => t.Quantity).DefaultIfEmpty(0).Max());
+    var maxCat = Math.Max(1m, Model.ByCategory.Values.DefaultIfEmpty(0).Max());
+    var walkShare = Model.Revenue == 0 ? 0 : Model.WalkupRevenue / Model.Revenue * 100;
+    string Pct(decimal part, decimal whole) => (whole == 0 ? 0 : part / whole * 100).ToString("0.##", CultureInfo.InvariantCulture);
+}
+
+<div class="bevo-panel bevo-panel-wide">
+    <div class="bevo-page-head">
+        <div>
+            <p class="bevo-eyebrow">Manager</p>
+            <h1 class="bevo-page-title">Sales dashboard</h1>
+            <p class="bevo-muted">Last @Model.Days days, Austin time. Cancelled orders are left out of sales.</p>
+        </div>
+        <div class="bevo-head-actions">
+            @foreach (var d in new[] { 7, 14, 30 })
+            {
+                <a asp-action="Index" asp-route-days="@d" class="bevo-mini @(d == Model.Days ? "solid" : "")">@d days</a>
+            }
+            <a asp-action="Export" asp-route-days="@Model.Days" class="bevo-btn ghost">⬇ Export CSV</a>
+        </div>
+    </div>
+
+    <partial name="_ManagerNav" />
+
+    <div class="bevo-kpis">
+        <div class="bevo-kpi"><span>Revenue</span><b>@Model.Revenue.ToString("c0")</b></div>
+        <div class="bevo-kpi"><span>Orders</span><b>@Model.OrderCount</b></div>
+        <div class="bevo-kpi"><span>Average ticket</span><b>@Model.AverageTicket.ToString("c")</b></div>
+        <div class="bevo-kpi"><span>Items sold</span><b>@Model.ItemsSold.ToString("n0")</b></div>
+        <div class="bevo-kpi"><span>Sales tax collected</span><b>@Model.SalesTax.ToString("c")</b></div>
+        <div class="bevo-kpi"><span>Tips</span><b>@Model.Tips.ToString("c")</b></div>
+        <div class="bevo-kpi"><span>Free deliveries</span><b>@Model.FreeDeliveries</b><small>@Model.DeliveryFeesWaived.ToString("c0") waived</small></div>
+        <div class="bevo-kpi"><span>Cancelled</span><b>@Model.Cancelled</b></div>
+    </div>
+
+    <div class="bevo-dash-card">
+        <h2>Revenue by day</h2>
+        <div class="bevo-daily" role="img" aria-label="Daily revenue for the last @Model.Days days">
+            @foreach (var day in Model.Daily)
+            {
+                <div class="bevo-day" title="@day.Day.ToString("ddd MMM d"): @day.Total.ToString("c") (walk-up @day.Walkup.ToString("c"), catering @day.Catering.ToString("c"))">
+                    <div class="bevo-day-bar" style="height:@Pct(day.Total, maxDay)%">
+                        <i class="catering" style="height:@Pct(day.Catering, day.Total)%"></i>
+                        <i class="walkup" style="height:@Pct(day.Walkup, day.Total)%"></i>
+                    </div>
+                    <small>@(Model.Days > 14 ? day.Day.ToString("%d") : day.Day.ToString("ddd"))</small>
+                </div>
+            }
+        </div>
+        <p class="bevo-legend"><i class="dot walkup"></i>Walk-up <i class="dot catering"></i>Catering</p>
+    </div>
+
+    <div class="bevo-dash-grid">
+        <div class="bevo-dash-card">
+            <h2>Revenue by order type</h2>
+            <div class="bevo-split" role="img" aria-label="Walk-up @walkShare.ToString("0")%, catering @((100 - walkShare).ToString("0"))%">
+                <span class="walkup" style="width:@Pct(Model.WalkupRevenue, Model.Revenue)%"></span><span class="catering" style="width:@Pct(Model.CateringRevenue, Model.Revenue)%"></span>
+            </div>
+            <dl class="bevo-legend-list">
+                <div><dt><i class="dot walkup"></i>Walk-up</dt><dd>@Model.WalkupRevenue.ToString("c") · @Model.WalkupOrders orders</dd></div>
+                <div><dt><i class="dot catering"></i>Catering</dt><dd>@Model.CateringRevenue.ToString("c") · @Model.CateringOrders orders</dd></div>
+            </dl>
+        </div>
+        <div class="bevo-dash-card">
+            <h2>Top sellers</h2>
+            <ul class="bevo-bars">
+                @foreach (var item in Model.TopItems)
+                {
+                    <li><span>@item.Name</span><div class="bar"><i style="width:@Pct(item.Quantity, maxItem)%"></i></div><b>@item.Quantity</b></li>
+                }
+            </ul>
+        </div>
+        <div class="bevo-dash-card">
+            <h2>Food sales by category</h2>
+            <ul class="bevo-bars">
+                @foreach (var (category, revenue) in Model.ByCategory)
+                {
+                    <li><span>@category</span><div class="bar"><i class="alt" style="width:@Pct(revenue, maxCat)%"></i></div><b>@revenue.ToString("c0")</b></li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="bevo-dash-card">
+        <h2>Latest orders</h2>
+        <div class="table-responsive">
+            <table class="bevo-table">
+                <thead><tr><th>#</th><th>Placed</th><th>Type</th><th>Customer</th><th class="num">Items</th><th class="num">Total</th><th>Status</th></tr></thead>
+                <tbody>
+                @foreach (var order in Model.Recent)
+                {
+                    <tr>
+                        <td><a asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId">@order.OrderNumber</a></td>
+                        <td>@AustinTime.Format(order.PlacedAtUtc)</td>
+                        <td>@(order is WalkupOrder ? "Walk-up" : "Catering")</td>
+                        <td>@(order switch { WalkupOrder w => w.CustomerName ?? "Walk-up guest", CateringOrder c => c.CustomerCode, _ => "" })</td>
+                        <td class="num">@order.TotalItems</td>
+                        <td class="num">@order.Total.ToString("c")</td>
+                        <td><span class="bevo-status bevo-status-@order.Status.ToString().ToLowerInvariant()">@order.Status</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

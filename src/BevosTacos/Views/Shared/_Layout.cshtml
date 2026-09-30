@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,37 +7,65 @@
     <script type="importmap"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BevosTacos.styles.css" asp-append-version="true" />
 </head>
+@inject CartService Cart
 @{
-    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var isHome = controller == "Home" && action == "Index";
+    var bodyClass = isHome ? "bevo-body-banner" : controller is "Checkout" or "Menu" or "Cart" ? "bevo-body-truck" : "bevo-body-plain";
+    var cartCount = Cart.Count();
+    string Active(string c) => controller == c ? "active" : "";
 }
-<body class="@(currentAction == "Index" ? "bevo-body-banner" : (currentAction == "CheckoutWalkup" || currentAction == "CheckoutCatering" ? "bevo-body-truck" : ""))">
+<body class="@bodyClass">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bevo-navbar">
+        <nav class="navbar navbar-expand-lg navbar-light bevo-navbar">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">🌮 Bevo's Tacos</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="bevoNavbar"
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">🌮 Bevo's Tacos</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bevoNavbar" aria-controls="bevoNavbar"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div id="bevoNavbar" class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div id="bevoNavbar" class="navbar-collapse collapse">
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item"><a class="nav-link @Active("Menu")" asp-controller="Menu" asp-action="Index">Menu</a></li>
+                        @if (User.IsInRole(Roles.Customer))
+                        {
+                            <li class="nav-item"><a class="nav-link @Active("Orders")" asp-controller="Orders" asp-action="Index">My Orders</a></li>
+                        }
+                        @if (User.IsInRole(Roles.Kitchen) || User.IsInRole(Roles.Manager))
+                        {
+                            <li class="nav-item"><a class="nav-link @Active("Kitchen")" asp-controller="Kitchen" asp-action="Index">Kitchen</a></li>
+                        }
+                        @if (User.IsInRole(Roles.Manager))
+                        {
+                            <li class="nav-item"><a class="nav-link @Active("Manager")" asp-controller="Manager" asp-action="Index">Manager</a></li>
+                        }
+                        <li class="nav-item"><a class="nav-link @(controller == "Home" && action == "About" ? "active" : "")" asp-controller="Home" asp-action="About">How It Works</a></li>
+                    </ul>
+                    <ul class="navbar-nav align-items-lg-center gap-lg-2">
                         <li class="nav-item">
-                            <a class="nav-link @(currentAction == "Index" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link @Active("Cart")" asp-controller="Cart" asp-action="Index">
+                                🛒 Cart @if (cartCount > 0) { <span class="bevo-badge">@cartCount</span> }
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentAction == "CheckoutWalkup" || currentAction == "WalkupTotals" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="CheckoutWalkup">Walk-Up Order</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentAction == "CheckoutCatering" || currentAction == "CateringTotals" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="CheckoutCatering">Catering Order</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentAction == "Privacy" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="nav-link btn btn-link bevo-signout">Sign out <small>(@User.Identity.Name?.Split('@')[0])</small></button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link @Active("Account")" asp-controller="Account" asp-action="Login">Sign in</a></li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -45,12 +73,14 @@
     </header>
 
     <main role="main" class="bevo-hero">
+        <partial name="_Messages" />
         @RenderBody()
     </main>
 
     <footer class="bevo-footer-dark">
         <div class="container text-center">
-            &copy; 2026 - Bevo's Tacos - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - Bevo's Tacos - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+            - <a href="https://github.com/suhxnitiwari/Bevo_Taco-Checkout" target="_blank" rel="noopener">Source</a>
         </div>
     </footer>
 

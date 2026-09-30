@@ -1,0 +1,12 @@
+@model PricedCart
+
+<ul class="bevo-summary-lines">
+    @foreach (var line in Model.Lines)
+    {
+        <li>
+            <span>@line.Quantity × @line.ItemName @if (!string.IsNullOrEmpty(line.AddOnSummary)) { <small>(@line.AddOnSummary)</small> }</span>
+            <span>@line.LineTotal.ToString("c")</span>
+        </li>
+    }
+</ul>
+<a asp-controller="Cart" asp-action="Index" class="bevo-link bevo-small">Edit cart</a>

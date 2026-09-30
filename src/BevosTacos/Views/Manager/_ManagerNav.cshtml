@@ -1,0 +1,8 @@
+@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<nav class="bevo-tabs" aria-label="Manager pages">
+    <a asp-action="Index" class="bevo-tab @(action == "Index" ? "on" : "")">Dashboard</a>
+    <a asp-action="Menu" class="bevo-tab @(action == "Menu" ? "on" : "")">Menu &amp; prices</a>
+    <a asp-action="Customers" class="bevo-tab @(action == "Customers" ? "on" : "")">Customers</a>
+</nav>

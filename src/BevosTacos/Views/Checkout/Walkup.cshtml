@@ -1,0 +1,72 @@
+@model WalkupCheckoutViewModel
+@{
+    ViewData["Title"] = "Walk-Up Checkout";
+    var subtotal = Model.Priced?.Subtotal ?? 0;
+    var tax = Math.Round(subtotal * WalkupOrder.SalesTaxRate, 2, MidpointRounding.AwayFromZero);
+}
+
+<div class="bevo-card bevo-card-checkout">
+    <div class="text-center">
+        <h1 class="bevo-headline-page text-bevo-orange">
+            Walk-Up Order
+            <span class="bevo-underline bevo-underline-page bevo-underline-orange"></span>
+        </h1>
+        <p class="bevo-subtitle">Fresh off the truck!</p>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3" role="alert"></div>
+
+    @if (Model.Priced is not null)
+    {
+        <partial name="_CartSummary" model="Model.Priced" />
+    }
+
+    <form asp-action="Walkup" method="post" class="bevo-form mt-3" id="walkup-form">
+        <div class="form-group">
+            <label asp-for="CustomerName" class="control-label"></label> <small class="bevo-muted">(optional)</small>
+            <input asp-for="CustomerName" class="form-control" placeholder="We'll call it out" maxlength="40" />
+            <span asp-validation-for="CustomerName" class="text-danger"></span>
+        </div>
+
+        <fieldset class="form-group bevo-tips">
+            <legend class="control-label">Tip the crew</legend>
+            @foreach (var percent in WalkupOrder.TipOptions)
+            {
+                <label class="bevo-tip">
+                    <input type="radio" name="TipPercent" value="@percent" checked="@(Model.TipPercent == percent)" data-tip="@percent" />
+                    <span>@(percent == 0 ? "None" : $"{percent}%")</span>
+                </label>
+            }
+            <span asp-validation-for="TipPercent" class="text-danger"></span>
+        </fieldset>
+
+        <dl class="bevo-totals" data-subtotal="@subtotal.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-tax="@tax.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+            <div><dt>Subtotal</dt><dd>@subtotal.ToString("c")</dd></div>
+            <div><dt>Sales tax (8.25%)</dt><dd>@tax.ToString("c")</dd></div>
+            <div><dt>Tip</dt><dd id="tip-amount">@((Math.Round(subtotal * Model.TipPercent / 100m, 2, MidpointRounding.AwayFromZero)).ToString("c"))</dd></div>
+            <div class="grand"><dt>Total</dt><dd id="grand-total">@((subtotal + tax + Math.Round(subtotal * Model.TipPercent / 100m, 2, MidpointRounding.AwayFromZero)).ToString("c"))</dd></div>
+        </dl>
+        <p class="bevo-muted bevo-small">The server recalculates every total when you place the order.</p>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn-checkout btn-checkout-walkup">Place order &rarr;</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Live preview of the tip; the real totals are always computed on the server
+        (() => {
+            const totals = document.querySelector('.bevo-totals');
+            const subtotal = Number(totals.dataset.subtotal), tax = Number(totals.dataset.tax);
+            const money = n => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            document.querySelectorAll('input[name=TipPercent]').forEach(radio => radio.addEventListener('change', () => {
+                const tip = Math.round(subtotal * Number(radio.value)) / 100;
+                document.getElementById('tip-amount').textContent = money(tip);
+                document.getElementById('grand-total').textContent = money(subtotal + tax + tip);
+            }));
+        })();
+    </script>
+}

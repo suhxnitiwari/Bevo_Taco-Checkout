@@ -1,0 +1,54 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div class="bevo-card bevo-card-summary bevo-card-narrow">
+    <div class="text-center">
+        <h1 class="bevo-headline-page text-bevo-maroon">
+            Create an account
+            <span class="bevo-underline bevo-underline-page bevo-underline-maroon"></span>
+        </h1>
+        <p class="bevo-subtitle">Needed for catering orders</p>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <form asp-action="Register" method="post" class="bevo-form">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div class="form-group">
+            <label asp-for="FirstName" class="control-label"></label>
+            <input asp-for="FirstName" class="form-control" autocomplete="given-name" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" autocomplete="email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="CustomerCode" class="control-label"></label>
+            <input asp-for="CustomerCode" class="form-control text-uppercase" maxlength="4" placeholder="2–4 letters, e.g. MISA" />
+            <span asp-validation-for="CustomerCode" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Password" class="control-label"></label>
+            <input asp-for="Password" class="form-control" autocomplete="new-password" aria-describedby="password-rules" />
+            <small id="password-rules" class="bevo-muted">At least 8 characters, with an uppercase letter, a lowercase letter and a number.</small>
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ConfirmPassword" class="control-label"></label>
+            <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+        <div class="form-group text-center">
+            <button type="submit" class="btn-checkout btn-checkout-catering">Create account</button>
+        </div>
+    </form>
+    <p class="text-center">Already have one? <a asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">Sign in</a></p>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

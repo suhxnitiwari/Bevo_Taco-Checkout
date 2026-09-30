@@ -1,0 +1,68 @@
+@model MenuViewModel
+@{
+    ViewData["Title"] = "Menu";
+    var blurbs = new Dictionary<MenuCategory, string>
+    {
+        [MenuCategory.Tacos] = "Handmade corn or flour tortillas",
+        [MenuCategory.Burgers] = "Half-pound Texas beef on a toasted bun",
+        [MenuCategory.Sides] = "Made to share (or not)",
+        [MenuCategory.Drinks] = "Cold, colder, coldest"
+    };
+}
+
+<div class="bevo-panel bevo-panel-wide">
+    <div class="bevo-page-head">
+        <div>
+            <p class="bevo-eyebrow">Menu</p>
+            <h1 class="bevo-page-title">What are we eating?</h1>
+        </div>
+        <a asp-controller="Cart" asp-action="Index" class="bevo-btn">View cart →</a>
+    </div>
+
+    <nav class="bevo-tabs" aria-label="Menu categories">
+        @foreach (var category in Enum.GetValues<MenuCategory>())
+        {
+            <a asp-action="Index" asp-route-category="@category" class="bevo-tab @(category == Model.Category ? "on" : "")"
+               aria-current="@(category == Model.Category ? "page" : null)">@category</a>
+        }
+    </nav>
+    <p class="bevo-muted">@blurbs[Model.Category]</p>
+
+    <div class="bevo-menu-grid">
+        @foreach (var item in Model.Items)
+        {
+            <form asp-action="Add" method="post" class="bevo-menu-item @(item.IsAvailable ? "" : "sold-out")">
+                <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                <div class="bevo-menu-top">
+                    <span class="bevo-emoji" aria-hidden="true">@item.Emoji</span>
+                    <div>
+                        <h2>@item.Name</h2>
+                        <p>@item.Description</p>
+                        @if (item.IsVegetarian) { <span class="bevo-tag veg">vegetarian</span> }
+                        @if (item.IsSpicy) { <span class="bevo-tag spicy">spicy</span> }
+                        @if (!item.IsAvailable) { <span class="bevo-tag out">sold out</span> }
+                    </div>
+                </div>
+                @if (item.AddOns.Count > 0)
+                {
+                    <fieldset class="bevo-addons" disabled="@(!item.IsAvailable)">
+                        <legend class="visually-hidden">Add-ons for @item.Name</legend>
+                        @foreach (var addOn in item.AddOns)
+                        {
+                            <label class="bevo-addon">
+                                <input type="checkbox" name="addOnIds" value="@addOn.AddOnId" />
+                                <span>@addOn.Name@(addOn.Price > 0 ? $" +{addOn.Price:c}" : "")</span>
+                            </label>
+                        }
+                    </fieldset>
+                }
+                <div class="bevo-menu-bottom">
+                    <span class="bevo-price">@item.Price.ToString("c")</span>
+                    <label class="visually-hidden" for="qty-@item.MenuItemId">Quantity</label>
+                    <input id="qty-@item.MenuItemId" name="quantity" type="number" min="1" max="@CartService.MaxQuantityPerLine" value="1" class="bevo-qty" disabled="@(!item.IsAvailable)" />
+                    <button type="submit" class="bevo-btn" disabled="@(!item.IsAvailable)">Add</button>
+                </div>
+            </form>
+        }
+    </div>
+</div>
